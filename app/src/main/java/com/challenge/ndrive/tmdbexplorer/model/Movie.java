@@ -6,61 +6,74 @@ package com.challenge.ndrive.tmdbexplorer.model;
 
 public class Movie {
 
-    private String title;
-    private int year;
-    private String poster​Image;
-    private String backdropPath;
-    private double voteAverage;
-    private double voteCount;
-    private String overview;
-    private int revenue;
-    private int runtime;
+    private int mId;
+    private String mTitle;
+    private String mReleaseDate;
+    private String mPoster​Image;
+    private String mBackdropPath;
+    private double mVoteAverage;
+    private double mVoteCount;
+    private String mOverview;
+    private int mRevenue;
+    private int mRuntime;
 
-    public Movie(String title, int year, String poster​Image, String backdropPath, double voteAverage, double voteCount, String overview, int revenue, int runtime) {
-        this.title = title;
-        this.year = year;
-        this.poster​Image = poster​Image;
-        this.backdropPath = backdropPath;
-        this.voteAverage = voteAverage;
-        this.voteCount = voteCount;
-        this.overview = overview;
-        this.revenue = revenue;
-        this.runtime = runtime;
+    public Movie(int id, String title, String releaseDate, String poster​Image) {
+        this.mId = id;
+        this.mTitle = title;
+        this.mReleaseDate = releaseDate;
+        this.mPoster​Image = poster​Image;
+    }
+
+    public Movie(int id, String title, String releaseDate, String poster​Image, String backdropPath, double voteAverage, double voteCount, String overview, int revenue, int runtime) {
+        this.mId = id;
+        this.mTitle = title;
+        this.mReleaseDate = releaseDate;
+        this.mPoster​Image = poster​Image;
+        this.mBackdropPath = backdropPath;
+        this.mVoteAverage = voteAverage;
+        this.mVoteCount = voteCount;
+        this.mOverview = overview;
+        this.mRevenue = revenue;
+        this.mRuntime = runtime;
+    }
+
+    public int getId() {
+        return mId;
     }
 
     public String getTitle() {
-        return title;
+        return mTitle;
     }
 
-    public int getYear() {
-        return year;
+    public String getReleaseDate() {
+        return mReleaseDate;
     }
 
     public String getPoster​Image() {
-        return poster​Image;
+        return mPoster​Image;
     }
 
     public String getBackdropPath() {
-        return backdropPath;
+        return mBackdropPath;
     }
 
     public double getVoteAverage() {
-        return voteAverage;
+        return mVoteAverage;
     }
 
-    public double getVoteCount() {
-        return voteCount;
+    public double getmVoteCount() {
+        return mVoteCount;
     }
 
     public String getOverview() {
-        return overview;
+        return mOverview;
     }
 
     public int getRevenue() {
-        return revenue;
+        return mRevenue;
     }
 
     public int getRuntime() {
-        return runtime;
+        return mRuntime;
     }
 }
