@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">TMDbExplorer</string>
+
+    <string name="search_message">Digite o título de um filme</string>
+</resources>
