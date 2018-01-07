@@ -22,7 +22,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
 
 /**
  * Created by marcelo on 04/01/18.
@@ -31,7 +30,7 @@ import java.util.TimeZone;
 public class MovieAdapter extends ArrayAdapter<Movie> {
 
     /** Tag for the log messages */
-    public static final String LOG_TAG = MovieAdapter.class.getSimpleName();
+    private static final String LOG_TAG = MovieAdapter.class.getSimpleName();
 
     private static final String BASE_URL = "https://image.tmdb.org/t/p/w92";
 
@@ -56,14 +55,14 @@ public class MovieAdapter extends ArrayAdapter<Movie> {
 
         String posterImage = builder.toString();
 
-        ImageView posterImageView = (ImageView) listItemView.findViewById(R.id.poster_image);
+        ImageView posterImageView = listItemView.findViewById(R.id.poster_image);
 
         Glide.with(getContext())
                 .load(posterImage)
                 .error(R.drawable.image_error)
                 .into(posterImageView);
 
-        TextView titleTextView = (TextView) listItemView.findViewById(R.id.movie_title);
+        TextView titleTextView = listItemView.findViewById(R.id.movie_title);
         titleTextView.setText(currentMovie.getTitle());
 
         // Create a new Date object from the time of the web publication date
@@ -79,7 +78,7 @@ public class MovieAdapter extends ArrayAdapter<Movie> {
             Log.e(LOG_TAG, "Date parse error ", e);
         }
 
-        TextView yearTextView = (TextView) listItemView.findViewById(R.id.movie_year);
+        TextView yearTextView = listItemView.findViewById(R.id.movie_year);
         yearTextView.setText(year);
 
         return listItemView;

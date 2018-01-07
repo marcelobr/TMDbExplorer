@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mLoadingIndicator = findViewById(R.id.loading_indicator);
         mLoadingIndicator.setVisibility(View.GONE);
 
-        searchView = (SearchView) findViewById(R.id.search);
+        searchView = findViewById(R.id.search);
         searchView.setIconifiedByDefault(false);
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -86,8 +86,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             }
         });
 
-        ListView movieListView = (ListView) findViewById(R.id.list_view);
-        mEmptyStateTextView = (TextView) findViewById(R.id.empty_view);
+        ListView movieListView = findViewById(R.id.list_view);
+        mEmptyStateTextView = findViewById(R.id.empty_view);
         movieListView.setEmptyView(mEmptyStateTextView);
 
         mAdapter = new MovieAdapter(this, new ArrayList<Movie>());
@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         }
     }
 
-    public void searchMovies(String query) {
+    private void searchMovies(String query) {
         Uri builtURI = Uri.parse(MOVIE_SEARCH_BASE_URL).buildUpon()
                 .appendQueryParameter(API_KEY_PARAM, "83d01f18538cb7a275147492f84c3698")
                 .appendQueryParameter(LANGUAGE_PARAM, "en-US")
@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, queryBundle, this);
     }
 
-    public boolean hasNetworkConnection() {
+    private boolean hasNetworkConnection() {
         // Get a reference to the ConnectivityManager to check state of network connectivity
         ConnectivityManager connMgr = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         }
     }
 
-    public void showNoInternetConnection() {
+    private void showNoInternetConnection() {
         View loadingIndicator = findViewById(R.id.loading_indicator);
         loadingIndicator.setVisibility(View.GONE);
 

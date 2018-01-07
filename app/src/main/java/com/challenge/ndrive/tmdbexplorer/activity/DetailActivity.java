@@ -39,7 +39,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        mEmptyStateTextView = (TextView) findViewById(R.id.movie_detail_empty_view);
+        mEmptyStateTextView = findViewById(R.id.movie_detail_empty_view);
         mEmptyStateTextView.setText("");
 
         // Get a reference to the ConnectivityManager to check state of network connectivity
@@ -86,7 +86,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         View loadingIndicator = findViewById(R.id.movie_detail_loading_indicator);
         loadingIndicator.setVisibility(View.GONE);
 
-        TextView titleTextView = (TextView) findViewById(R.id.movie_detail_title);
+        TextView titleTextView = findViewById(R.id.movie_detail_title);
         titleTextView.setText(movieDetail.getTitle());
 
         Uri builder = Uri.parse(BASE_URL)
@@ -96,25 +96,25 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
         String backdropImage = builder.toString();
 
-        ImageView backdropImageView = (ImageView) findViewById(R.id.movie_detail_backdrop);
+        ImageView backdropImageView = findViewById(R.id.movie_detail_backdrop);
         Glide.with(this)
                 .load(backdropImage)
                 .error(R.drawable.image_error)
                 .into(backdropImageView);
 
-        TextView voteAverageTextView = (TextView) findViewById(R.id.movie_detail_vote_average);
+        TextView voteAverageTextView = findViewById(R.id.movie_detail_vote_average);
         voteAverageTextView.setText(String.valueOf(movieDetail.getVoteAverage()));
 
-        TextView voteCountTextView = (TextView) findViewById(R.id.movie_detail_vote_count);
+        TextView voteCountTextView = findViewById(R.id.movie_detail_vote_count);
         voteCountTextView.setText(String.valueOf(movieDetail.getVoteCount()));
 
-        TextView overviewTextView = (TextView) findViewById(R.id.movie_detail_overview);
+        TextView overviewTextView = findViewById(R.id.movie_detail_overview);
         overviewTextView.setText(movieDetail.getOverview());
 
-        TextView revenueTextView = (TextView) findViewById(R.id.movie_detail_revenue);
+        TextView revenueTextView = findViewById(R.id.movie_detail_revenue);
         revenueTextView.setText(String.valueOf(movieDetail.getRevenue()));
 
-        TextView runtimeTextView = (TextView) findViewById(R.id.movie_detail_runtime);
+        TextView runtimeTextView = findViewById(R.id.movie_detail_runtime);
         runtimeTextView.setText(String.valueOf(movieDetail.getRuntime()));
     }
 
