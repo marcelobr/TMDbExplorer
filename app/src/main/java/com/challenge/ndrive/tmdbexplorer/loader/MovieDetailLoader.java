@@ -1,19 +1,17 @@
 package com.challenge.ndrive.tmdbexplorer.loader;
 
-import android.support.v4.content.AsyncTaskLoader;
 import android.content.Context;
+import android.support.v4.content.AsyncTaskLoader;
 
-import com.challenge.ndrive.tmdbexplorer.model.Movie;
+import com.challenge.ndrive.tmdbexplorer.model.MovieDetail;
 import com.challenge.ndrive.tmdbexplorer.utils.QueryUtils;
 
-import java.util.List;
 
 /**
- * Created by marcelo on 04/01/18.
+ * Created by marcelo on 06/01/18.
  */
 
-public class MovieLoader extends AsyncTaskLoader<List<Movie>> {
-
+public class MovieDetailLoader extends AsyncTaskLoader<MovieDetail> {
     /** Query URL */
     private String mUrl;
 
@@ -23,7 +21,7 @@ public class MovieLoader extends AsyncTaskLoader<List<Movie>> {
      * @param context of the activity
      * @param url to load data from
      */
-    public MovieLoader(Context context, String url) {
+    public MovieDetailLoader(Context context, String url) {
         super(context);
         mUrl = url;
     }
@@ -37,13 +35,13 @@ public class MovieLoader extends AsyncTaskLoader<List<Movie>> {
      * This is on a background thread.
      */
     @Override
-    public List<Movie> loadInBackground() {
+    public MovieDetail loadInBackground() {
         if (mUrl == null) {
             return null;
         }
 
-        // Perform the network request, parse the response, and extract a list of earthquakes.
-        List<Movie> movies = QueryUtils.fetchMovieData(mUrl);
-        return movies;
+        // Perform the network request, parse the response, and extract a list of movie details.
+        MovieDetail movieDetail = QueryUtils.fetchMovieDetailData(mUrl);
+        return movieDetail;
     }
 }

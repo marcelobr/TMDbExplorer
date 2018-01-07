@@ -4,6 +4,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.challenge.ndrive.tmdbexplorer.model.Movie;
+import com.challenge.ndrive.tmdbexplorer.model.MovieDetail;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -67,8 +68,25 @@ public final class QueryUtils {
         // Extract relevant fields from the JSON response and create an {@link Event} object
         List<Movie> movie = extractMovies(jsonResponse);
 
-        // Return the {@link Event}
         return movie;
+    }
+
+    public static MovieDetail fetchMovieDetailData(String requestUrl) {
+        // Create URL object
+        URL url = createUrl(requestUrl);
+
+        // Perform HTTP request to the URL and receive a JSON response back
+        String jsonResponse = null;
+        try {
+            jsonResponse = makeHttpRequest(url);
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "Error closing input stream", e);
+        }
+
+        // Extract relevant fields from the JSON response and create an {@link Event} object
+        MovieDetail movieDetail = extractMovieDetail(jsonResponse);
+
+        return movieDetail;
     }
 
     /**
@@ -135,7 +153,7 @@ public final class QueryUtils {
      * Return a list of {@link Movie} objects that has been built up from
      * parsing a JSON response.
      */
-    public static List<Movie> extractMovies(String movieJSON) {
+    private static List<Movie> extractMovies(String movieJSON) {
 
         if (TextUtils.isEmpty(movieJSON)) {
             return null;
@@ -193,4 +211,47 @@ public final class QueryUtils {
         return movies;
     }
 
+    private static MovieDetail extractMovieDetail(String movieDetailJSON) {
+        if (TextUtils.isEmpty(movieDetailJSON)) {
+            return null;
+        }
+
+        MovieDetail movieDetail = null;
+
+        try {
+
+            // Create a JSONObject from the SAMPLE_JSON_RESPONSE string
+            JSONObject baseJsonResponse = new JSONObject(movieDetailJSON);
+
+            // Extract the value for the key called "title"
+            String title = baseJsonResponse.getString("title");
+
+            // Extract the value for the key called "backdrop_path"
+            String backdrop = baseJsonResponse.getString("backdrop_path");
+
+            // Extract the value for the key called "vote_average"
+            Double voteAverage = baseJsonResponse.getDouble("vote_average");
+
+            // Extract the value for the key called "vote_count"
+            int voteCount = baseJsonResponse.getInt("vote_count");
+
+            // Extract the value for the key called "overview"
+            String overview = baseJsonResponse.getString("overview");
+
+            // Extract the value for the key called "revenue"
+            int revenue = baseJsonResponse.getInt("revenue");
+
+            // Extract the value for the key called "runtime"
+            int runtime = baseJsonResponse.getInt("runtime");
+
+            movieDetail = new MovieDetail(title, backdrop, voteAverage, voteCount, overview, revenue, runtime);
+        } catch (JSONException e) {
+        // If an error is thrown when executing any of the above statements in the "try" block,
+        // catch the exception here, so the app doesn't crash. Print a log message
+        // with the message from the exception.
+        Log.e("QueryUtils", "Problem parsing the movie detail JSON results", e);
+    }
+
+        return movieDetail;
+    }
 }

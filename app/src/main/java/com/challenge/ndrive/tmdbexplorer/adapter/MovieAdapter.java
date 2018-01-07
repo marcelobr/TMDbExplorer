@@ -33,7 +33,7 @@ public class MovieAdapter extends ArrayAdapter<Movie> {
     /** Tag for the log messages */
     public static final String LOG_TAG = MovieAdapter.class.getSimpleName();
 
-    final String BASE_URL = "https://image.tmdb.org/t/p/w92";
+    private static final String BASE_URL = "https://image.tmdb.org/t/p/w92";
 
     public MovieAdapter(@NonNull Context context, ArrayList<Movie> movies) {
         super(context, 0, movies);
@@ -51,7 +51,7 @@ public class MovieAdapter extends ArrayAdapter<Movie> {
 
         Uri builder = Uri.parse(BASE_URL)
                 .buildUpon()
-                .appendPath(currentMovie.getPoster​Image())
+                .appendEncodedPath(currentMovie.getPoster​Image())
                 .build();
 
         String posterImage = builder.toString();
@@ -71,16 +71,16 @@ public class MovieAdapter extends ArrayAdapter<Movie> {
         String year = null;
         try {
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            dateObject = df.parse(currentMovie.getReleaseDate());
             Calendar cal = Calendar.getInstance();
             cal.setTime(dateObject);
-            dateObject = df.parse(currentMovie.getReleaseDate());
-            year = cal.get(Calendar.YEAR);
+            year = String.valueOf(cal.get(Calendar.YEAR));
         } catch(ParseException e) {
             Log.e(LOG_TAG, "Date parse error ", e);
         }
 
         TextView yearTextView = (TextView) listItemView.findViewById(R.id.movie_year);
-        yearTextView.setText(dateObject.getYear());
+        yearTextView.setText(year);
 
         return listItemView;
     }
