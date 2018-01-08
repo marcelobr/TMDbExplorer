@@ -21,7 +21,7 @@ import com.challenge.ndrive.tmdbexplorer.R;
 import com.challenge.ndrive.tmdbexplorer.adapter.MovieAdapter;
 import com.challenge.ndrive.tmdbexplorer.loader.MovieLoader;
 import com.challenge.ndrive.tmdbexplorer.model.Movie;
-import com.challenge.ndrive.tmdbexplorer.utils.RecyclerItemClickListener;
+import com.challenge.ndrive.tmdbexplorer.listener.RecyclerItemClickListener;
 import com.challenge.ndrive.tmdbexplorer.utils.TmdbClient;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.challenge.ndrive.tmdbexplorer.utils;
+package com.challenge.ndrive.tmdbexplorer.listener;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
