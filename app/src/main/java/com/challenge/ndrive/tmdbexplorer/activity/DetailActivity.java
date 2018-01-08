@@ -15,16 +15,11 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.challenge.ndrive.tmdbexplorer.R;
 import com.challenge.ndrive.tmdbexplorer.loader.MovieDetailLoader;
-import com.challenge.ndrive.tmdbexplorer.model.MovieDetail;
+import com.challenge.ndrive.tmdbexplorer.model.Movie;
+import com.challenge.ndrive.tmdbexplorer.utils.TmdbClient;
 
 
-public class DetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<MovieDetail> {
-
-    private static final String MOVIE_SEARCH_BASE_URL = "https://api.themoviedb.org/3/movie/";
-    private static final String API_KEY_PARAM = "api_key";
-    private static final String LANGUAGE_PARAM = "language";
-
-    private static final String BASE_URL = "https://image.tmdb.org/t/p/w500";
+public class DetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Movie> {
 
     /**
      * Constant value for the movie detail loader ID.
@@ -34,10 +29,43 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     /** TextView that is displayed when the list is empty */
     private TextView mEmptyStateTextView;
 
+    private View loadingIndicator;
+
+    private TextView titleTextView;
+
+    private ImageView backdropImageView;
+
+    private TextView voteAverageTextView;
+
+    private TextView voteCountTextView;
+
+    private TextView overviewTextView;
+
+    private TextView revenueTextView;
+
+    private TextView runtimeTextView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+
+        loadingIndicator = findViewById(R.id.movie_detail_loading_indicator);
+        loadingIndicator.setVisibility(View.VISIBLE);
+
+        titleTextView = findViewById(R.id.movie_detail_title);
+
+        backdropImageView = findViewById(R.id.movie_detail_backdrop);
+
+        voteAverageTextView = findViewById(R.id.movie_detail_vote_average);
+
+        voteCountTextView = findViewById(R.id.movie_detail_vote_count);
+
+        overviewTextView = findViewById(R.id.movie_detail_overview);
+
+        revenueTextView = findViewById(R.id.movie_detail_revenue);
+
+        runtimeTextView = findViewById(R.id.movie_detail_runtime);
 
         mEmptyStateTextView = findViewById(R.id.movie_detail_empty_view);
         mEmptyStateTextView.setText("");
@@ -54,9 +82,9 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         // If there is a network connection, fetch data
         if (networkInfo != null && networkInfo.isConnected()) {
             if (extras != null) {
-                int movieId = extras.getInt("MovieId");
+                long movieId = extras.getLong("MovieId");
                 Bundle movieIdBundle = new Bundle();
-                movieIdBundle.putString("movieId", String.valueOf(movieId));
+                movieIdBundle.putLong("movieId", movieId);
                 getSupportLoaderManager().initLoader(MOVIE_DETAIL_LOADER_ID, movieIdBundle, this);
             }
         } else {
@@ -71,53 +99,42 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     }
 
     @Override
-    public Loader<MovieDetail> onCreateLoader(int i, Bundle bundle) {
-        Uri builtURI = Uri.parse(MOVIE_SEARCH_BASE_URL).buildUpon()
-                .appendEncodedPath(bundle.getString("movieId"))
-                .appendQueryParameter(API_KEY_PARAM, "83d01f18538cb7a275147492f84c3698")
-                .appendQueryParameter(LANGUAGE_PARAM, "en-US")
-                .build();
-
+    public Loader<Movie> onCreateLoader(int i, Bundle bundle) {
+        Uri builtURI = TmdbClient.getMovieDetailUri(bundle.getLong("movieId"));
         return new MovieDetailLoader(this, builtURI.toString());
     }
 
     @Override
-    public void onLoadFinished(Loader<MovieDetail> loader, MovieDetail movieDetail) {
-        View loadingIndicator = findViewById(R.id.movie_detail_loading_indicator);
+    public void onLoadFinished(Loader<Movie> loader, Movie movieDetail) {
+
         loadingIndicator.setVisibility(View.GONE);
 
-        TextView titleTextView = findViewById(R.id.movie_detail_title);
         titleTextView.setText(movieDetail.getTitle());
 
-        Uri builder = Uri.parse(BASE_URL)
-                .buildUpon()
-                .appendEncodedPath(movieDetail.getBackdropPath())
-                .build();
+        boolean isLandscape = getResources().getBoolean(R.bool.is_landscape);
 
-        String backdropImage = builder.toString();
+        String moviePathImage = isLandscape ? movieDetail.getPoster​Image() : movieDetail.getBackdropPath();
 
-        ImageView backdropImageView = findViewById(R.id.movie_detail_backdrop);
+        Uri movieImage = TmdbClient.getImageUri(moviePathImage, true);
+
         Glide.with(this)
-                .load(backdropImage)
+                .load(movieImage)
+                .placeholder(R.drawable.detail_image_placeholder)
+                .crossFade()
                 .error(R.drawable.image_error)
                 .into(backdropImageView);
 
-        TextView voteAverageTextView = findViewById(R.id.movie_detail_vote_average);
         voteAverageTextView.setText(String.valueOf(movieDetail.getVoteAverage()));
 
-        TextView voteCountTextView = findViewById(R.id.movie_detail_vote_count);
         voteCountTextView.setText(String.valueOf(movieDetail.getVoteCount()));
 
-        TextView overviewTextView = findViewById(R.id.movie_detail_overview);
         overviewTextView.setText(movieDetail.getOverview());
 
-        TextView revenueTextView = findViewById(R.id.movie_detail_revenue);
         revenueTextView.setText(String.valueOf(movieDetail.getRevenue()));
 
-        TextView runtimeTextView = findViewById(R.id.movie_detail_runtime);
         runtimeTextView.setText(String.valueOf(movieDetail.getRuntime()));
     }
 
     @Override
-    public void onLoaderReset(Loader<MovieDetail> loader) {}
+    public void onLoaderReset(Loader<Movie> loader) {}
 }

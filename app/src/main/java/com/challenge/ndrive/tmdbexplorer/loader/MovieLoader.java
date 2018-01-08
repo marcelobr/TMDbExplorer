@@ -4,7 +4,7 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.content.Context;
 
 import com.challenge.ndrive.tmdbexplorer.model.Movie;
-import com.challenge.ndrive.tmdbexplorer.utils.QueryUtils;
+import com.challenge.ndrive.tmdbexplorer.utils.TmdbData;
 
 import java.util.List;
 
@@ -43,7 +43,7 @@ public class MovieLoader extends AsyncTaskLoader<List<Movie>> {
         }
 
         // Perform the network request, parse the response, and extract a list of earthquakes.
-        List<Movie> movies = QueryUtils.fetchMovieData(mUrl);
+        List<Movie> movies = TmdbData.fetchMovieData(mUrl);
         return movies;
     }
 }

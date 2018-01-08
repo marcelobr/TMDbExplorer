@@ -3,6 +3,8 @@
 
     <string name="search_message">Digite o título de um filme</string>
 
+    <string name="date_error_message">[No Date]</string>
+
     <!-- Error message when there is no internet connectivity [CHAR LIMIT=NONE] -->
     <string name="no_internet_connection">No internet connection.</string>
 

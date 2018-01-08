@@ -3,20 +3,20 @@ package com.challenge.ndrive.tmdbexplorer.loader;
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
-import com.challenge.ndrive.tmdbexplorer.model.MovieDetail;
-import com.challenge.ndrive.tmdbexplorer.utils.QueryUtils;
+import com.challenge.ndrive.tmdbexplorer.model.Movie;
+import com.challenge.ndrive.tmdbexplorer.utils.TmdbData;
 
 
 /**
  * Created by marcelo on 06/01/18.
  */
 
-public class MovieDetailLoader extends AsyncTaskLoader<MovieDetail> {
+public class MovieDetailLoader extends AsyncTaskLoader<Movie> {
     /** Query URL */
     private String mUrl;
 
     /**
-     * Constructs a new {@link MovieLoader}.
+     * Constructs a new {@link Movie}.
      *
      * @param context of the activity
      * @param url to load data from
@@ -35,13 +35,13 @@ public class MovieDetailLoader extends AsyncTaskLoader<MovieDetail> {
      * This is on a background thread.
      */
     @Override
-    public MovieDetail loadInBackground() {
+    public Movie loadInBackground() {
         if (mUrl == null) {
             return null;
         }
 
         // Perform the network request, parse the response, and extract a list of movie details.
-        MovieDetail movieDetail = QueryUtils.fetchMovieDetailData(mUrl);
-        return movieDetail;
+        Movie movie = TmdbData.fetchMovieDetailData(mUrl);
+        return movie;
     }
 }

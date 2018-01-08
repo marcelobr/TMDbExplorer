@@ -21,18 +21,12 @@ import com.challenge.ndrive.tmdbexplorer.R;
 import com.challenge.ndrive.tmdbexplorer.adapter.MovieAdapter;
 import com.challenge.ndrive.tmdbexplorer.loader.MovieLoader;
 import com.challenge.ndrive.tmdbexplorer.model.Movie;
+import com.challenge.ndrive.tmdbexplorer.utils.TmdbClient;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Movie>> {
-
-    private static final String MOVIE_SEARCH_BASE_URL = "https://api.themoviedb.org/3/search/movie?";
-    private static final String API_KEY_PARAM = "api_key";
-    private static final String LANGUAGE_PARAM = "language";
-    private static final String PAGE_PARAM = "page";
-    private static final String INCLUDE_ADULT_PARAM = "include_adult";
-    private static final String QUERY_PARAM = "query";
 
     /**
      * Constant value for the earthquake loader ID.
@@ -122,14 +116,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     private void searchMovies(String query) {
-        Uri builtURI = Uri.parse(MOVIE_SEARCH_BASE_URL).buildUpon()
-                .appendQueryParameter(API_KEY_PARAM, "83d01f18538cb7a275147492f84c3698")
-                .appendQueryParameter(LANGUAGE_PARAM, "en-US")
-                .appendQueryParameter(PAGE_PARAM, "1")
-                .appendQueryParameter(INCLUDE_ADULT_PARAM, "false")
-                .appendQueryParameter(QUERY_PARAM, query)
-                .build();
-
+        Uri builtURI = TmdbClient.getSearchMoviesUri(query, 1);
         Bundle queryBundle = new Bundle();
         queryBundle.putString("queryString", builtURI.toString());
         getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, queryBundle, this);
@@ -188,6 +175,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         if (movies != null && !movies.isEmpty()) {
             mAdapter.addAll(movies);
         }
+
+        searchView.clearFocus();
     }
 
     @Override
