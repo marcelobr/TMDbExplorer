@@ -18,6 +18,9 @@ import com.challenge.ndrive.tmdbexplorer.loader.MovieDetailLoader;
 import com.challenge.ndrive.tmdbexplorer.model.Movie;
 import com.challenge.ndrive.tmdbexplorer.utils.TmdbClient;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 
 public class DetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Movie> {
 
@@ -26,48 +29,45 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
      */
     private static final int MOVIE_DETAIL_LOADER_ID = 2;
 
-    /** TextView that is displayed when the list is empty */
-    private TextView mEmptyStateTextView;
+    /**
+     * TextView that is displayed when the list is empty
+     */
+    @BindView(R.id.movie_detail_empty_view)
+    TextView mEmptyStateTextView;
 
-    private View loadingIndicator;
+    @BindView(R.id.movie_detail_loading_indicator)
+    View loadingIndicator;
 
-    private TextView titleTextView;
+    @BindView(R.id.movie_detail_title)
+    TextView titleTextView;
 
-    private ImageView backdropImageView;
+    @BindView(R.id.movie_detail_backdrop)
+    ImageView backdropImageView;
 
-    private TextView voteAverageTextView;
+    @BindView(R.id.movie_detail_vote_average)
+    TextView voteAverageTextView;
 
-    private TextView voteCountTextView;
+    @BindView(R.id.movie_detail_vote_count)
+    TextView voteCountTextView;
 
-    private TextView overviewTextView;
+    @BindView(R.id.movie_detail_overview)
+    TextView overviewTextView;
 
-    private TextView revenueTextView;
+    @BindView(R.id.movie_detail_revenue)
+    TextView revenueTextView;
 
-    private TextView runtimeTextView;
+    @BindView(R.id.movie_detail_runtime)
+    TextView runtimeTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        loadingIndicator = findViewById(R.id.movie_detail_loading_indicator);
+        ButterKnife.bind(this);
+
         loadingIndicator.setVisibility(View.VISIBLE);
 
-        titleTextView = findViewById(R.id.movie_detail_title);
-
-        backdropImageView = findViewById(R.id.movie_detail_backdrop);
-
-        voteAverageTextView = findViewById(R.id.movie_detail_vote_average);
-
-        voteCountTextView = findViewById(R.id.movie_detail_vote_count);
-
-        overviewTextView = findViewById(R.id.movie_detail_overview);
-
-        revenueTextView = findViewById(R.id.movie_detail_revenue);
-
-        runtimeTextView = findViewById(R.id.movie_detail_runtime);
-
-        mEmptyStateTextView = findViewById(R.id.movie_detail_empty_view);
         mEmptyStateTextView.setText("");
 
         // Get a reference to the ConnectivityManager to check state of network connectivity
@@ -90,7 +90,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         } else {
             // Otherwise, display error
             // First, hide loading indicator so error message will be visible
-            View loadingIndicator = findViewById(R.id.movie_detail_loading_indicator);
             loadingIndicator.setVisibility(View.GONE);
 
             // Update empty state with no connection error message
@@ -136,5 +135,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     }
 
     @Override
-    public void onLoaderReset(Loader<Movie> loader) {}
+    public void onLoaderReset(Loader<Movie> loader) {
+    }
 }

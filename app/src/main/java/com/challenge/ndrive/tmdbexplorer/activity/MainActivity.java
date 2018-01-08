@@ -4,11 +4,9 @@ import android.content.Intent;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
@@ -28,6 +26,9 @@ import com.challenge.ndrive.tmdbexplorer.utils.TmdbClient;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Movie>> {
 
     /**
@@ -35,31 +36,35 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
      */
     private static final int MOVIE_LOADER_ID = 1;
 
-    private View mLoadingIndicator;
-
-    private SearchView searchView;
-
-    /** TextView that is displayed when the list is empty */
-    private TextView mEmptyStateTextView;
-    private RecyclerView movieRecyclerView;
     private MovieAdapter mAdapter;
+
+    @BindView(R.id.loading_indicator)
+    View mLoadingIndicator;
+
+    @BindView(R.id.search)
+    SearchView searchView;
+
+    @BindView(R.id.empty_view)
+    TextView mEmptyStateTextView;
+
+    @BindView(R.id.recycler_view)
+    RecyclerView mMovieRecyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mLoadingIndicator = findViewById(R.id.loading_indicator);
+        ButterKnife.bind(this);
+
         mLoadingIndicator.setVisibility(View.GONE);
 
-        searchView = findViewById(R.id.search);
         searchView.setIconifiedByDefault(false);
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 mEmptyStateTextView.setText("");
-                mLoadingIndicator = findViewById(R.id.loading_indicator);
                 mLoadingIndicator.setVisibility(View.VISIBLE);
 
                 if (hasNetworkConnection()) {
@@ -82,27 +87,26 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             }
         });
 
-        movieRecyclerView = findViewById(R.id.recycler_view);
-        mEmptyStateTextView = findViewById(R.id.empty_view);
         mAdapter = new MovieAdapter(this);
-        movieRecyclerView.setHasFixedSize(true);
-        movieRecyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
-        movieRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        movieRecyclerView.setAdapter(mAdapter);
+        mMovieRecyclerView.setHasFixedSize(true);
+        mMovieRecyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
+        mMovieRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mMovieRecyclerView.setAdapter(mAdapter);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        movieRecyclerView.setLayoutManager(mLayoutManager);
+        mMovieRecyclerView.setLayoutManager(mLayoutManager);
 
         if (mAdapter.getItemCount() == 0) {
-            movieRecyclerView.setVisibility(View.GONE);
+            mMovieRecyclerView.setVisibility(View.GONE);
             mEmptyStateTextView.setVisibility(View.VISIBLE);
         } else {
-            movieRecyclerView.setVisibility(View.VISIBLE);
+            mMovieRecyclerView.setVisibility(View.VISIBLE);
             mEmptyStateTextView.setVisibility(View.GONE);
         }
 
-        movieRecyclerView.addOnItemTouchListener(
+        mMovieRecyclerView.addOnItemTouchListener(
                 new RecyclerItemClickListener(this, new RecyclerItemClickListener.OnItemClickListener() {
-                    @Override public void onItemClick(View view, int position) {
+                    @Override
+                    public void onItemClick(View view, int position) {
                         // Find the current movie that was clicked on
                         Movie currentMovie = mAdapter.getItem(position);
 
@@ -121,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             // Initialize the loader. Pass in the int ID constant defined above and pass in null for
             // the bundle. Pass in this activity for the LoaderCallbacks parameter (which is valid
             // because this activity implements the LoaderCallbacks interface).
-            if(getSupportLoaderManager().getLoader(MOVIE_LOADER_ID)!=null){
+            if (getSupportLoaderManager().getLoader(MOVIE_LOADER_ID) != null) {
                 getSupportLoaderManager().initLoader(MOVIE_LOADER_ID, null, this);
             }
         } else {
@@ -152,8 +156,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     private void showNoInternetConnection() {
-        View loadingIndicator = findViewById(R.id.loading_indicator);
-        loadingIndicator.setVisibility(View.GONE);
+        mLoadingIndicator.setVisibility(View.GONE);
 
         // Update empty state with no connection error message
         mEmptyStateTextView.setText(R.string.no_internet_connection);
@@ -176,8 +179,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onLoadFinished(Loader<List<Movie>> loader, List<Movie> movies) {
-        View loadingIndicator = findViewById(R.id.loading_indicator);
-        loadingIndicator.setVisibility(View.GONE);
+
+        mLoadingIndicator.setVisibility(View.GONE);
 
         mEmptyStateTextView.setText(R.string.no_movies);
 
@@ -188,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         // data set. This will trigger the ListView to update.
         if (movies != null && !movies.isEmpty()) {
             mAdapter.addMovies(movies);
-            movieRecyclerView.setVisibility(View.VISIBLE);
+            mMovieRecyclerView.setVisibility(View.VISIBLE);
             mEmptyStateTextView.setVisibility(View.GONE);
         }
 
