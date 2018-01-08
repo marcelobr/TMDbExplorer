@@ -2,14 +2,12 @@ package com.challenge.ndrive.tmdbexplorer.adapter;
 
 import android.content.Context;
 import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -21,76 +19,107 @@ import com.challenge.ndrive.tmdbexplorer.utils.TmdbClient;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 /**
  * Created by marcelo on 04/01/18.
  */
 
-public class MovieAdapter extends ArrayAdapter<Movie> {
+public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> {
 
     /** Tag for the log messages */
     private static final String LOG_TAG = MovieAdapter.class.getSimpleName();
 
-    private static final String BASE_URL = "https://image.tmdb.org/t/p/w92";
+    private List<Movie> moviesList;
+    private Context context;
 
     private final int colorDefault;
     private final int colorRed;
 
-    public MovieAdapter(@NonNull Context context, ArrayList<Movie> movies) {
-        super(context, 0, movies);
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+
+        public ImageView mPosterImageView;
+        public TextView mTitleTextView;
+        public TextView mYearTextView;
+
+        public ViewHolder(View view) {
+            super(view);
+            mPosterImageView = view.findViewById(R.id.poster_image);
+            mTitleTextView = view.findViewById(R.id.movie_title);
+            mYearTextView = view.findViewById(R.id.movie_year);
+        }
+    }
+
+    public MovieAdapter(Context context) {
+        this.context = context;
         this.colorDefault = ContextCompat.getColor(context, android.R.color.black);
         this.colorRed = ContextCompat.getColor(context, R.color.red);
     }
 
-    @NonNull
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        View listItemView = convertView;
-        if (listItemView == null) {
-            listItemView = LayoutInflater.from(getContext()).inflate(R.layout.list_item, parent, false);
-        }
+    public MovieAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View listItem = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.list_item, parent, false);
 
-        Movie currentMovie = getItem(position);
+        return new ViewHolder(listItem);
+    }
 
-        Uri builder = TmdbClient.getImageUri(currentMovie.getPoster​Image(), false);
+    @Override
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        Movie movie = this.moviesList.get(position);
+
+        Uri builder = TmdbClient.getImageUri(movie.getPoster​Image(), false);
 
         String posterImage = builder.toString();
 
-        ImageView posterImageView = listItemView.findViewById(R.id.poster_image);
-
-        Glide.with(getContext())
+        Glide.with(context)
                 .load(posterImage)
                 .placeholder(R.drawable.image_placeholder)
                 .error(R.drawable.image_error)
                 .crossFade()
-                .into(posterImageView);
+                .into(holder.mPosterImageView);
 
-        TextView titleTextView = listItemView.findViewById(R.id.movie_title);
-        titleTextView.setText(currentMovie.getTitle());
-
-        TextView yearTextView = listItemView.findViewById(R.id.movie_year);
+        holder.mTitleTextView.setText(movie.getTitle());
 
         // Create a new Date object from the time of the web publication date
         Date dateObject;
         try {
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-            dateObject = df.parse(currentMovie.getReleaseDate());
+            dateObject = df.parse(movie.getReleaseDate());
             Calendar movieDate = Calendar.getInstance();
             movieDate.setTime(dateObject);
             int movieYear = movieDate.get(Calendar.YEAR);
-            yearTextView.setText(String.valueOf(movieYear));
+            holder.mYearTextView.setText(String.valueOf(movieYear));
             Calendar currentDate = Calendar.getInstance();
             int currentYear = currentDate.get(Calendar.YEAR);
-            yearTextView.setTextColor(movieYear == currentYear ? colorRed : colorDefault);
+            holder.mYearTextView.setTextColor(movieYear == currentYear ? colorRed : colorDefault);
         } catch(ParseException e) {
             Log.e(LOG_TAG, "Date parse error ", e);
-            yearTextView.setText(R.string.date_error_message);
+            holder.mYearTextView.setText(R.string.date_error_message);
         }
+    }
 
-        return listItemView;
+    @Override
+    public int getItemCount() {
+        return this.moviesList == null ? 0 : this.moviesList.size();
+    }
+
+    public Movie getItem(int position) {
+        return this.moviesList == null ? null : this.moviesList.get(position);
+    }
+
+    public void addMovies(List<Movie> movies) {
+        this.moviesList = movies;
+        notifyDataSetChanged();
+    }
+
+    public void clear() {
+        if (getItemCount() > 0) {
+            this.moviesList.clear();
+            notifyDataSetChanged();
+        }
     }
 }

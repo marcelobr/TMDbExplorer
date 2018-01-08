@@ -10,21 +10,22 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.os.Bundle;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.TextView;
 
 import com.challenge.ndrive.tmdbexplorer.R;
 import com.challenge.ndrive.tmdbexplorer.adapter.MovieAdapter;
 import com.challenge.ndrive.tmdbexplorer.loader.MovieLoader;
 import com.challenge.ndrive.tmdbexplorer.model.Movie;
+import com.challenge.ndrive.tmdbexplorer.utils.RecyclerItemClickListener;
 import com.challenge.ndrive.tmdbexplorer.utils.TmdbClient;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Movie>> {
@@ -40,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     /** TextView that is displayed when the list is empty */
     private TextView mEmptyStateTextView;
-
+    private RecyclerView movieRecyclerView;
     private MovieAdapter mAdapter;
 
     @Override
@@ -81,12 +82,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             }
         });
 
-//        ListView movieListView = findViewById(R.id.list_view);
-        RecyclerView movieRecyclerView = findViewById(R.id.recycler_view);
+        movieRecyclerView = findViewById(R.id.recycler_view);
         mEmptyStateTextView = findViewById(R.id.empty_view);
-//        movieRecyclerView.setEmptyView(mEmptyStateTextView);
-        mAdapter = new MovieAdapter(this, new ArrayList<Movie>());
+        mAdapter = new MovieAdapter(this);
+        movieRecyclerView.setHasFixedSize(true);
+        movieRecyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
+        movieRecyclerView.setItemAnimator(new DefaultItemAnimator());
         movieRecyclerView.setAdapter(mAdapter);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        movieRecyclerView.setLayoutManager(mLayoutManager);
 
         if (mAdapter.getItemCount() == 0) {
             movieRecyclerView.setVisibility(View.GONE);
@@ -96,18 +100,22 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             mEmptyStateTextView.setVisibility(View.GONE);
         }
 
-//        movieRecyclerView.addOnItemTouchListener(new RecyclerItem);
-//
-//        // Find the current movie that was clicked on
-//        Movie currentMovie = mAdapter.getItem(position);
-//
-//        // Create a new intent to view the movie detail
-//        Intent intent = new Intent(MainActivity.this, DetailActivity.class);
-//
-//        intent.putExtra("MovieId", currentMovie.getId());
-//
-//        // Send the intent to launch a new activity
-//        startActivity(intent);
+        movieRecyclerView.addOnItemTouchListener(
+                new RecyclerItemClickListener(this, new RecyclerItemClickListener.OnItemClickListener() {
+                    @Override public void onItemClick(View view, int position) {
+                        // Find the current movie that was clicked on
+                        Movie currentMovie = mAdapter.getItem(position);
+
+                        // Create a new intent to view the movie detail
+                        Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+
+                        intent.putExtra("MovieId", currentMovie.getId());
+
+                        // Send the intent to launch a new activity
+                        startActivity(intent);
+                    }
+                })
+        );
 
         if (hasNetworkConnection()) {
             // Initialize the loader. Pass in the int ID constant defined above and pass in null for
@@ -179,7 +187,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         // If there is a valid list of {@link Movie}s, then add them to the adapter's
         // data set. This will trigger the ListView to update.
         if (movies != null && !movies.isEmpty()) {
-            mAdapter.addAll(movies);
+            mAdapter.addMovies(movies);
+            movieRecyclerView.setVisibility(View.VISIBLE);
+            mEmptyStateTextView.setVisibility(View.GONE);
         }
 
         searchView.clearFocus();
