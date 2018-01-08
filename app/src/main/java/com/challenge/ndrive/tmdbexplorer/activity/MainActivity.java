@@ -10,11 +10,12 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.challenge.ndrive.tmdbexplorer.R;
@@ -80,28 +81,33 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             }
         });
 
-        ListView movieListView = findViewById(R.id.list_view);
+//        ListView movieListView = findViewById(R.id.list_view);
+        RecyclerView movieRecyclerView = findViewById(R.id.recycler_view);
         mEmptyStateTextView = findViewById(R.id.empty_view);
-        movieListView.setEmptyView(mEmptyStateTextView);
-
+//        movieRecyclerView.setEmptyView(mEmptyStateTextView);
         mAdapter = new MovieAdapter(this, new ArrayList<Movie>());
-        movieListView.setAdapter(mAdapter);
+        movieRecyclerView.setAdapter(mAdapter);
 
-        movieListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                // Find the current movie that was clicked on
-                Movie currentMovie = mAdapter.getItem(position);
+        if (mAdapter.getItemCount() == 0) {
+            movieRecyclerView.setVisibility(View.GONE);
+            mEmptyStateTextView.setVisibility(View.VISIBLE);
+        } else {
+            movieRecyclerView.setVisibility(View.VISIBLE);
+            mEmptyStateTextView.setVisibility(View.GONE);
+        }
 
-                // Create a new intent to view the movie detail
-                Intent intent = new Intent(MainActivity.this, DetailActivity.class);
-
-                intent.putExtra("MovieId", currentMovie.getId());
-
-                // Send the intent to launch a new activity
-                startActivity(intent);
-            }
-        });
+//        movieRecyclerView.addOnItemTouchListener(new RecyclerItem);
+//
+//        // Find the current movie that was clicked on
+//        Movie currentMovie = mAdapter.getItem(position);
+//
+//        // Create a new intent to view the movie detail
+//        Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+//
+//        intent.putExtra("MovieId", currentMovie.getId());
+//
+//        // Send the intent to launch a new activity
+//        startActivity(intent);
 
         if (hasNetworkConnection()) {
             // Initialize the loader. Pass in the int ID constant defined above and pass in null for
