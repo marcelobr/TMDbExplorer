@@ -1,12 +1,12 @@
 package com.challenge.ndrive.tmdbexplorer.activity;
 
 import android.content.Intent;
+import android.support.annotation.StringRes;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
@@ -22,7 +22,6 @@ import com.challenge.ndrive.tmdbexplorer.adapter.MovieAdapter;
 import com.challenge.ndrive.tmdbexplorer.loader.MovieLoader;
 import com.challenge.ndrive.tmdbexplorer.model.Movie;
 import com.challenge.ndrive.tmdbexplorer.listener.RecyclerItemClickListener;
-import com.challenge.ndrive.tmdbexplorer.utils.TmdbClient;
 
 import java.util.List;
 
@@ -95,14 +94,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mMovieRecyclerView.setLayoutManager(mLayoutManager);
 
-        if (mAdapter.getItemCount() == 0) {
-            mMovieRecyclerView.setVisibility(View.GONE);
-            mEmptyStateTextView.setVisibility(View.VISIBLE);
-        } else {
-            mMovieRecyclerView.setVisibility(View.VISIBLE);
-            mEmptyStateTextView.setVisibility(View.GONE);
-        }
-
         mMovieRecyclerView.addOnItemTouchListener(
                 new RecyclerItemClickListener(this, new RecyclerItemClickListener.OnItemClickListener() {
                     @Override
@@ -134,9 +125,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     private void searchMovies(String query) {
-        Uri builtURI = TmdbClient.getSearchMoviesUri(query, 1);
+        hideEmptyMessage();
+
         Bundle queryBundle = new Bundle();
-        queryBundle.putString("queryString", builtURI.toString());
+        queryBundle.putString("queryString", query);
+        queryBundle.putInt("page", 1);
         getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, queryBundle, this);
     }
 
@@ -159,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mLoadingIndicator.setVisibility(View.GONE);
 
         // Update empty state with no connection error message
-        mEmptyStateTextView.setText(R.string.no_internet_connection);
+        setEmptyMessage(R.string.no_internet_connection);
     }
 
     @Override
@@ -174,7 +167,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 //                getString(R.string.settings_order_by_default)
 //        );
 
-        return new MovieLoader(this, bundle.getString("queryString"));
+        String query = bundle.getString("queryString");
+        int page = bundle.getInt("page");
+
+        return new MovieLoader(this, query, page);
     }
 
     @Override
@@ -182,17 +178,16 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         mLoadingIndicator.setVisibility(View.GONE);
 
-        mEmptyStateTextView.setText(R.string.no_movies);
-
         // Clear the adapter of previous movie data
         mAdapter.clear();
 
         // If there is a valid list of {@link Movie}s, then add them to the adapter's
         // data set. This will trigger the ListView to update.
         if (movies != null && !movies.isEmpty()) {
+            hideEmptyMessage();
             mAdapter.addMovies(movies);
-            mMovieRecyclerView.setVisibility(View.VISIBLE);
-            mEmptyStateTextView.setVisibility(View.GONE);
+        } else {
+            setEmptyMessage(R.string.no_movies);
         }
 
         searchView.clearFocus();
@@ -202,5 +197,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public void onLoaderReset(Loader<List<Movie>> loader) {
         // Loader reset
         mAdapter.clear();
+    }
+
+    private void setEmptyMessage(@StringRes int message) {
+        mEmptyStateTextView.setText(message);
+        mEmptyStateTextView.setVisibility(View.VISIBLE);
+    }
+
+    private void hideEmptyMessage() {
+        mEmptyStateTextView.setVisibility(View.GONE);
     }
 }

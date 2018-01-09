@@ -3,8 +3,9 @@ package com.challenge.ndrive.tmdbexplorer.loader;
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
+import com.challenge.ndrive.tmdbexplorer.TmdbApplication;
+import com.challenge.ndrive.tmdbexplorer.interfaces.TmdbClient;
 import com.challenge.ndrive.tmdbexplorer.model.Movie;
-import com.challenge.ndrive.tmdbexplorer.utils.TmdbData;
 
 
 /**
@@ -12,18 +13,21 @@ import com.challenge.ndrive.tmdbexplorer.utils.TmdbData;
  */
 
 public class MovieDetailLoader extends AsyncTaskLoader<Movie> {
-    /** Query URL */
-    private String mUrl;
+    /** Movie Id */
+    private long mId;
+
+    private TmdbClient client;
 
     /**
-     * Constructs a new {@link Movie}.
+     * Constructs a new {@link MovieDetailLoader}.
      *
      * @param context of the activity
-     * @param url to load data from
+     * @param id the id of Movie to load.
      */
-    public MovieDetailLoader(Context context, String url) {
+    public MovieDetailLoader(Context context, long id) {
         super(context);
-        mUrl = url;
+        client = ((TmdbApplication) context.getApplicationContext()).getClient();
+        mId = id;
     }
 
     @Override
@@ -36,12 +40,6 @@ public class MovieDetailLoader extends AsyncTaskLoader<Movie> {
      */
     @Override
     public Movie loadInBackground() {
-        if (mUrl == null) {
-            return null;
-        }
-
-        // Perform the network request, parse the response, and extract a list of movie details.
-        Movie movie = TmdbData.fetchMovieDetailData(mUrl);
-        return movie;
+        return client.getMovie(mId);
     }
 }

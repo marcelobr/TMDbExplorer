@@ -13,8 +13,10 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.challenge.ndrive.tmdbexplorer.R;
+import com.challenge.ndrive.tmdbexplorer.TmdbApplication;
+import com.challenge.ndrive.tmdbexplorer.interfaces.TmdbClient;
 import com.challenge.ndrive.tmdbexplorer.model.Movie;
-import com.challenge.ndrive.tmdbexplorer.utils.TmdbClient;
+import com.challenge.ndrive.tmdbexplorer.utils.TmdbImageType;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -33,12 +35,17 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     /** Tag for the log messages */
     private static final String LOG_TAG = MovieAdapter.class.getSimpleName();
 
-    private List<Movie> moviesList;
-    private Context context;
+    private List<Movie> mMoviesList = null;
+    private Context mContext;
 
     private final int colorDefault;
     private final int colorRed;
 
+    private TmdbClient mClient;
+
+    // Provide a reference to the views for each data item
+    // Complex data items may need more than one view per item, and
+    // you provide access to all the views for a data item in a view holder
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         public ImageView mPosterImageView;
@@ -54,41 +61,43 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     }
 
     public MovieAdapter(Context context) {
-        this.context = context;
+        this.mContext = context;
+        this.mClient = ((TmdbApplication) context.getApplicationContext()).getClient();
         this.colorDefault = ContextCompat.getColor(context, android.R.color.black);
         this.colorRed = ContextCompat.getColor(context, R.color.red);
     }
 
+    // Create new views (invoked by the layout manager)
     @Override
     public MovieAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        // create a new view
         View listItem = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.list_item, parent, false);
 
         return new ViewHolder(listItem);
     }
 
+    // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Movie movie = this.moviesList.get(position);
+        Movie currentMovie = this.mMoviesList.get(position);
 
-        Uri builder = TmdbClient.getImageUri(movie.getPoster​Image(), false);
+        Uri posterImage = this.mClient.getImageUri(currentMovie.getPoster​Image(), TmdbImageType.THUMB);
 
-        String posterImage = builder.toString();
-
-        Glide.with(context)
+        Glide.with(mContext)
                 .load(posterImage)
                 .placeholder(R.drawable.image_placeholder)
                 .error(R.drawable.image_error)
                 .crossFade()
                 .into(holder.mPosterImageView);
 
-        holder.mTitleTextView.setText(movie.getTitle());
+        holder.mTitleTextView.setText(currentMovie.getTitle());
 
         // Create a new Date object from the time of the web publication date
         Date dateObject;
         try {
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-            dateObject = df.parse(movie.getReleaseDate());
+            dateObject = df.parse(currentMovie.getReleaseDate());
             Calendar movieDate = Calendar.getInstance();
             movieDate.setTime(dateObject);
             int movieYear = movieDate.get(Calendar.YEAR);
@@ -102,23 +111,24 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         }
     }
 
+    // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return this.moviesList == null ? 0 : this.moviesList.size();
+        return this.mMoviesList == null ? 0 : this.mMoviesList.size();
     }
 
     public Movie getItem(int position) {
-        return this.moviesList == null ? null : this.moviesList.get(position);
+        return this.mMoviesList == null ? null : this.mMoviesList.get(position);
     }
 
     public void addMovies(List<Movie> movies) {
-        this.moviesList = movies;
+        this.mMoviesList = movies;
         notifyDataSetChanged();
     }
 
     public void clear() {
         if (getItemCount() > 0) {
-            this.moviesList.clear();
+            this.mMoviesList.clear();
             notifyDataSetChanged();
         }
     }

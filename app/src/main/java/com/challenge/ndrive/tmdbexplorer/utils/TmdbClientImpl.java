@@ -1,12 +1,21 @@
 package com.challenge.ndrive.tmdbexplorer.utils;
 
 import android.net.Uri;
+import android.support.annotation.NonNull;
+
+import com.challenge.ndrive.tmdbexplorer.interfaces.TmdbClient;
+import com.challenge.ndrive.tmdbexplorer.model.Movie;
+
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by marcelo on 1/7/18.
  */
 
-public class TmdbClient {
+public class TmdbClientImpl implements TmdbClient {
 
     private static final String API_BASE_URL = "https://api.themoviedb.org/3";
     private static final String IMAGE_BASE_URL = "https://image.tmdb.org/t/p/";
@@ -22,28 +31,52 @@ public class TmdbClient {
     private static final String INCLUDE_ADULT_PARAM = "include_adult";
     private static final String QUERY_PARAM = "query";
 
-    public static Uri getSearchMoviesUri(String query, int page) {
-        return Uri.parse(SEARCH_URL).buildUpon()
+    private final TmdbParser parser = new TmdbParser();
+
+    @NonNull
+    @Override
+    public List<Movie> searchMovies(@NonNull  String query, int page) {
+        Uri searchUri = Uri.parse(SEARCH_URL).buildUpon()
                 .appendQueryParameter(API_KEY_PARAM, API_KEY)
                 .appendQueryParameter(LANGUAGE_PARAM, "en-US")
                 .appendQueryParameter(PAGE_PARAM, String.valueOf(page))
                 .appendQueryParameter(INCLUDE_ADULT_PARAM, "false")
                 .appendQueryParameter(QUERY_PARAM, query)
                 .build();
+
+        JSONObject result = TmdbData.fetchData(searchUri.toString());
+
+        if (result == null) {
+            // return an empty list
+            return new ArrayList<>();
+        }
+
+        return parser.extractMovies(result);
     }
 
-    public static Uri getMovieDetailUri(long movieId) {
-        return Uri.parse(DETAIL_URL).buildUpon()
+    @Override
+    public Movie getMovie(long movieId) {
+        Uri detailsUri = Uri.parse(DETAIL_URL).buildUpon()
                 .appendEncodedPath(String.valueOf(movieId))
                 .appendQueryParameter(API_KEY_PARAM, API_KEY)
                 .appendQueryParameter(LANGUAGE_PARAM, "en-US")
                 .build();
+
+        JSONObject result = TmdbData.fetchData(detailsUri.toString());
+
+        if (result == null) {
+            // return no object
+            return null;
+        }
+
+        return parser.extractMovieDetail(result);
     }
 
-    public static Uri getImageUri(String imagePath, boolean large) {
+    @Override
+    public Uri getImageUri(String imagePath, TmdbImageType imageType) {
         return Uri.parse(IMAGE_BASE_URL)
                 .buildUpon()
-                .appendEncodedPath((large ? "w500" : "w92") + imagePath)
+                .appendEncodedPath(imageType.getValue() + imagePath)
                 .build();
     }
 

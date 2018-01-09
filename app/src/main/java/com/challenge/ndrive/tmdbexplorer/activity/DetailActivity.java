@@ -14,9 +14,11 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.challenge.ndrive.tmdbexplorer.R;
+import com.challenge.ndrive.tmdbexplorer.TmdbApplication;
+import com.challenge.ndrive.tmdbexplorer.interfaces.TmdbClient;
 import com.challenge.ndrive.tmdbexplorer.loader.MovieDetailLoader;
 import com.challenge.ndrive.tmdbexplorer.model.Movie;
-import com.challenge.ndrive.tmdbexplorer.utils.TmdbClient;
+import com.challenge.ndrive.tmdbexplorer.utils.TmdbImageType;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,6 +30,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
      * Constant value for the movie detail loader ID.
      */
     private static final int MOVIE_DETAIL_LOADER_ID = 2;
+
+    private TmdbClient mClient;
 
     /**
      * TextView that is displayed when the list is empty
@@ -66,6 +70,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
         ButterKnife.bind(this);
 
+        mClient = ((TmdbApplication) getApplication()).getClient();
+
         loadingIndicator.setVisibility(View.VISIBLE);
 
         mEmptyStateTextView.setText("");
@@ -99,8 +105,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
     @Override
     public Loader<Movie> onCreateLoader(int i, Bundle bundle) {
-        Uri builtURI = TmdbClient.getMovieDetailUri(bundle.getLong("movieId"));
-        return new MovieDetailLoader(this, builtURI.toString());
+        return new MovieDetailLoader(this, bundle.getLong("movieId"));
     }
 
     @Override
@@ -114,7 +119,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
         String moviePathImage = isLandscape ? movieDetail.getPoster​Image() : movieDetail.getBackdropPath();
 
-        Uri movieImage = TmdbClient.getImageUri(moviePathImage, true);
+        Uri movieImage = mClient.getImageUri(moviePathImage, TmdbImageType.LARGE);
 
         Glide.with(this)
                 .load(movieImage)

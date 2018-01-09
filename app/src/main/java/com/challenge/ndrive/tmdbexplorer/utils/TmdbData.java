@@ -1,8 +1,12 @@
 package com.challenge.ndrive.tmdbexplorer.utils;
 
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.challenge.ndrive.tmdbexplorer.model.Movie;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,7 +16,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.List;
 
 /**
  * Created by marcelo on 07/01/18.
@@ -44,40 +47,22 @@ public class TmdbData {
     /**
      * Query the TMDb dataset and return an {@link Movie} object to represent a single movie.
      */
-    public static List<Movie> fetchMovieData(String requestUrl) {
+    @Nullable
+    public static JSONObject fetchData(String requestUrl) {
         // Create URL object
         URL url = createUrl(requestUrl);
 
         // Perform HTTP request to the URL and receive a JSON response back
-        String jsonResponse = null;
+        JSONObject jsonResponse = null;
         try {
-            jsonResponse = makeHttpRequest(url);
+            jsonResponse = new JSONObject(makeHttpRequest(url));
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error closing input stream", e);
+        } catch (JSONException e) {
+            Log.e(LOG_TAG, "Error process the result", e);
         }
 
-        // Extract relevant fields from the JSON response and create an {@link Event} object
-        List<Movie> movie = TmdbParser.extractMovies(jsonResponse);
-
-        return movie;
-    }
-
-    public static Movie fetchMovieDetailData(String requestUrl) {
-        // Create URL object
-        URL url = createUrl(requestUrl);
-
-        // Perform HTTP request to the URL and receive a JSON response back
-        String jsonResponse = null;
-        try {
-            jsonResponse = makeHttpRequest(url);
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "Error closing input stream", e);
-        }
-
-        // Extract relevant fields from the JSON response and create an {@link Event} object
-        Movie movieDetail = TmdbParser.extractMovieDetail(jsonResponse);
-
-        return movieDetail;
+        return jsonResponse;
     }
 
     /**

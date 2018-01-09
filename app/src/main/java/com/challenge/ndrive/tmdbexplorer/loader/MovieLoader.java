@@ -3,8 +3,9 @@ package com.challenge.ndrive.tmdbexplorer.loader;
 import android.support.v4.content.AsyncTaskLoader;
 import android.content.Context;
 
+import com.challenge.ndrive.tmdbexplorer.TmdbApplication;
+import com.challenge.ndrive.tmdbexplorer.interfaces.TmdbClient;
 import com.challenge.ndrive.tmdbexplorer.model.Movie;
-import com.challenge.ndrive.tmdbexplorer.utils.TmdbData;
 
 import java.util.List;
 
@@ -14,18 +15,25 @@ import java.util.List;
 
 public class MovieLoader extends AsyncTaskLoader<List<Movie>> {
 
-    /** Query URL */
-    private String mUrl;
+    /** Query to perform */
+    private String mQuery;
+
+    /** Page to load */
+    private int mPage;
+
+    private TmdbClient client;
 
     /**
      * Constructs a new {@link MovieLoader}.
      *
      * @param context of the activity
-     * @param url to load data from
+     * @param query to load data from
      */
-    public MovieLoader(Context context, String url) {
+    public MovieLoader(Context context, String query, int page) {
         super(context);
-        mUrl = url;
+        client = ((TmdbApplication) context.getApplicationContext()).getClient();
+        mQuery = query;
+        mPage = page;
     }
 
     @Override
@@ -38,12 +46,11 @@ public class MovieLoader extends AsyncTaskLoader<List<Movie>> {
      */
     @Override
     public List<Movie> loadInBackground() {
-        if (mUrl == null) {
+        if (mQuery == null) {
             return null;
         }
 
         // Perform the network request, parse the response, and extract a list of earthquakes.
-        List<Movie> movies = TmdbData.fetchMovieData(mUrl);
-        return movies;
+        return client.searchMovies(mQuery, mPage);
     }
 }
