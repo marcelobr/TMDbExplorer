@@ -17,7 +17,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 /**
@@ -70,11 +71,15 @@ public class TmdbParserTest {
 
         // Assert
         assertEquals("Madagascar", movie.getTitle());
-        assertEquals(6.6, movie.getVoteAverage());
+        assertEquals(6.6, movie.getVoteAverage(),0);
 
-//        Calendar calendar = Calendar.getInstance();
-//        calendar.set(2005, 5, 25);
-//        Date expectedDate = calendar.getTime();
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2005, 4, 25, 0, 0, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        Date expectedDate = calendar.getTime();
+
+        assertNotNull(movie.getReleaseDate());
+        assertEquals(expectedDate, movie.getReleaseDate().getTime());
     }
 
     @Test

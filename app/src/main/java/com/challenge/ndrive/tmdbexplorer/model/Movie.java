@@ -37,9 +37,8 @@ public class Movie {
         this.mPoster​Image = poster​Image;
     }
 
-    public Movie(String title, String posterImage, String backdropPath, double voteAverage, double voteCount, String overview, int revenue, int runtime) {
-        this.mTitle = title;
-        this.mPoster​Image = posterImage;
+    public Movie(long id, String title, String releaseDate, String posterImage, String backdropPath, double voteAverage, double voteCount, String overview, int revenue, int runtime) {
+        this(id, title, releaseDate, posterImage);
         this.mBackdropPath = backdropPath;
         this.mVoteAverage = voteAverage;
         this.mVoteCount = voteCount;
@@ -85,34 +84,31 @@ public class Movie {
     }
 
     @Nullable
-    public Date getReleaseDate() {
-        Date date = null;
+    public Calendar getReleaseDate() {
+        Calendar calendar = Calendar.getInstance();
 
         if (this.mReleaseDate != null) {
             try {
                 DateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-                date = df.parse(this.mReleaseDate);
+                calendar.setTime(df.parse(this.mReleaseDate));
             } catch (ParseException e) {
                 Log.e(LOG_TAG, "Unknown date format", e);
             }
         }
 
-        return date;
+        return calendar;
     }
 
     /**
      * @return The year of release date or 0 when unknown.
      */
     public int getYear() {
-        Date date = getReleaseDate();
+        Calendar date = getReleaseDate();
 
         if (date == null) {
             return 0;
         }
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-
-        return calendar.get(Calendar.YEAR);
+        return date.get(Calendar.YEAR);
     }
 }

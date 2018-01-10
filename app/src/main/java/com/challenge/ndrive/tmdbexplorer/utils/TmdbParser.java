@@ -79,8 +79,14 @@ public final class TmdbParser {
         Movie movieDetail = null;
 
         try {
+            // Extract the value for the key called "id"
+            long id = movieDetailJSON.getLong("id");
+
             // Extract the value for the key called "title"
             String title = movieDetailJSON.getString("title");
+
+            // Extract the value for the key called "release_date"
+            String releaseDate = movieDetailJSON.getString("release_date");
 
             // Extract the value for the key called "poster_path"
             String poster = movieDetailJSON.getString("poster_path");
@@ -103,7 +109,7 @@ public final class TmdbParser {
             // Extract the value for the key called "runtime"
             int runtime = movieDetailJSON.getInt("runtime");
 
-            movieDetail = new Movie(title, poster, backdrop, voteAverage, voteCount, overview, revenue, runtime);
+            movieDetail = new Movie(id, title, releaseDate, poster, backdrop, voteAverage, voteCount, overview, revenue, runtime);
         } catch (JSONException e) {
             // If an error is thrown when executing any of the above statements in the "try" block,
             // catch the exception here, so the app doesn't crash. Print a log message
