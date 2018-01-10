@@ -2,14 +2,19 @@ package com.challenge.ndrive.tmdbexplorer.utils;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.util.Log;
 
+import com.challenge.ndrive.tmdbexplorer.interfaces.ApiEndpoints;
 import com.challenge.ndrive.tmdbexplorer.interfaces.TmdbClient;
 import com.challenge.ndrive.tmdbexplorer.model.Movie;
 import com.challenge.ndrive.tmdbexplorer.model.MoviesResponse;
 
+import java.util.List;
+
 import retrofit2.Call;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by marcelo on 1/7/18.
@@ -17,35 +22,54 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class TmdbClientImpl implements TmdbClient {
 
-    private static final String API_BASE_URL = "https://api.themoviedb.org/3/";
+    /** Tag for the log messages */
+    private static final String LOG_TAG = TmdbClientImpl.class.getSimpleName();
+
+    private static final String API_BASE_URL = "https://api.themoviedb.org/3";
     private static final String IMAGE_BASE_URL = "https://image.tmdb.org/t/p/";
 
     private static final String API_KEY = "83d01f18538cb7a275147492f84c3698";
 
-    private static final String SEARCH_URL = API_BASE_URL + "/search/movie?";
-    private static final String DETAIL_URL = API_BASE_URL + "/movie/";
+    ApiEndpoints mApiEndpoints;
 
-    private static final String API_KEY_PARAM = "api_key";
-    private static final String LANGUAGE_PARAM = "language";
-    private static final String PAGE_PARAM = "page";
-    private static final String INCLUDE_ADULT_PARAM = "include_adult";
-    private static final String QUERY_PARAM = "query";
-
-    private static Retrofit retrofit = null;
+    public TmdbClientImpl() {
+        mApiEndpoints = ApiClient.getClient().create(ApiEndpoints.class);
+    }
 
     @NonNull
     @Override
-    public Call<MoviesResponse> searchMovies(String apiKey, int page, String query) {
-        TmdbClient apiService = getClient().create(TmdbClient.class);
+    public void searchMovies(@NonNull String query, int page, final MoviesCallback<List<Movie>> callback) {
+        Call<MoviesResponse> callMovies = mApiEndpoints.searchMovies(API_KEY, page, query);
+        callMovies.enqueue(new Callback<MoviesResponse>() {
+            @Override
+            public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
+                List<Movie> movies = response.body().getResults();
+                callback.onLoaded(movies);
+            }
 
-        return apiService.searchMovies(apiKey, page, query);
+            @Override
+            public void onFailure(Call<MoviesResponse> call, Throwable t) {
+                Log.e(LOG_TAG, t.toString());
+            }
+        });
     }
 
+    @Nullable
     @Override
-    public Call<Movie> getMovieDetails(long id, String apiKey) {
-        TmdbClient apiService = getClient().create(TmdbClient.class);
+    public void getMovie(long movieId, final MovieCallback<Movie> callback) {
+        Call<Movie> callMovie = mApiEndpoints.getMovieDetails(movieId, API_KEY);
+        callMovie.enqueue(new Callback<Movie>() {
+            @Override
+            public void onResponse(Call<Movie> call, Response<Movie> response) {
+                Movie movieDetail = response.body();
+                callback.onLoaded(movieDetail);
+            }
 
-        return apiService.getMovieDetails(id, apiKey);
+            @Override
+            public void onFailure(Call<Movie> call, Throwable t) {
+                Log.e(LOG_TAG, t.toString());
+            }
+        });
     }
 
     @Override
@@ -54,16 +78,6 @@ public class TmdbClientImpl implements TmdbClient {
                 .buildUpon()
                 .appendEncodedPath(imageType.getValue() + imagePath)
                 .build();
-    }
-
-    public static Retrofit getClient() {
-        if (retrofit==null) {
-            retrofit = new Retrofit.Builder()
-                    .baseUrl(API_BASE_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-        }
-        return retrofit;
     }
 
 }

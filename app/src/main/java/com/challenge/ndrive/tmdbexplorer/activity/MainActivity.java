@@ -12,7 +12,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -22,22 +21,14 @@ import com.challenge.ndrive.tmdbexplorer.adapter.MovieAdapter;
 import com.challenge.ndrive.tmdbexplorer.interfaces.TmdbClient;
 import com.challenge.ndrive.tmdbexplorer.model.Movie;
 import com.challenge.ndrive.tmdbexplorer.listener.RecyclerItemClickListener;
-import com.challenge.ndrive.tmdbexplorer.model.MoviesResponse;
 
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+
 
 public class MainActivity extends AppCompatActivity {
-
-    /** Tag for the log messages */
-    private static final String LOG_TAG = MainActivity.class.getSimpleName();
-
-    private static final String API_KEY = "83d01f18538cb7a275147492f84c3698";
 
     private MovieAdapter mAdapter;
 
@@ -128,12 +119,9 @@ public class MainActivity extends AppCompatActivity {
     private void searchMovies(String query) {
         hideEmptyMessage();
 
-        Call<MoviesResponse> call = mClient.searchMovies(API_KEY, 1, query);
-        call.enqueue(new Callback<MoviesResponse>() {
+        mClient.searchMovies(query, 1, new TmdbClient.MoviesCallback<List<Movie>>() {
             @Override
-            public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
-                List<Movie> movies = response.body().getResults();
-
+            public void onLoaded(List<Movie> movies) {
                 mLoadingIndicator.setVisibility(View.GONE);
 
                 // Clear the adapter of previous movie data
@@ -149,11 +137,6 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 searchView.clearFocus();
-            }
-
-            @Override
-            public void onFailure(Call<MoviesResponse> call, Throwable t) {
-                Log.e(LOG_TAG, t.toString());
             }
         });
     }

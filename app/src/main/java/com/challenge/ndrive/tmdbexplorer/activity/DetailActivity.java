@@ -6,7 +6,6 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,17 +19,9 @@ import com.challenge.ndrive.tmdbexplorer.utils.TmdbImageType;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 
 public class DetailActivity extends AppCompatActivity {
-
-    /** Tag for the log messages */
-    private static final String LOG_TAG = DetailActivity.class.getSimpleName();
-
-    private static final String API_KEY = "83d01f18538cb7a275147492f84c3698";
 
     private TmdbClient mClient;
 
@@ -90,19 +81,17 @@ public class DetailActivity extends AppCompatActivity {
         if (networkInfo != null && networkInfo.isConnected()) {
             if (extras != null) {
                 long movieId = extras.getLong("MovieId");
-                Call<Movie> call = mClient.getMovieDetails(movieId, API_KEY);
-                call.enqueue(new Callback<Movie>() {
-                    @Override
-                    public void onResponse(Call<Movie> call, Response<Movie> response) {
-                        Movie movieDetail = response.body();
 
+                mClient.getMovie(movieId, new TmdbClient.MovieCallback<Movie>() {
+                    @Override
+                    public void onLoaded(Movie movie) {
                         loadingIndicator.setVisibility(View.GONE);
 
-                        titleTextView.setText(movieDetail.getTitle());
+                        titleTextView.setText(movie.getTitle());
 
                         boolean isLandscape = getResources().getBoolean(R.bool.is_landscape);
 
-                        String moviePathImage = isLandscape ? movieDetail.getPoster​Image() : movieDetail.getBackdropPath();
+                        String moviePathImage = isLandscape ? movie.getPoster​Image() : movie.getBackdropPath();
 
                         Uri movieImage = mClient.getImageUri(moviePathImage, TmdbImageType.LARGE);
 
@@ -113,20 +102,15 @@ public class DetailActivity extends AppCompatActivity {
                                 .error(R.drawable.image_error)
                                 .into(backdropImageView);
 
-                        voteAverageTextView.setText(String.valueOf(movieDetail.getVoteAverage()));
+                        voteAverageTextView.setText(String.valueOf(movie.getVoteAverage()));
 
-                        voteCountTextView.setText(String.valueOf(movieDetail.getVoteCount()));
+                        voteCountTextView.setText(String.valueOf(movie.getVoteCount()));
 
-                        overviewTextView.setText(movieDetail.getOverview());
+                        overviewTextView.setText(movie.getOverview());
 
-                        revenueTextView.setText(String.valueOf(movieDetail.getRevenue()));
+                        revenueTextView.setText(String.valueOf(movie.getRevenue()));
 
-                        runtimeTextView.setText(String.valueOf(movieDetail.getRuntime()));
-                    }
-
-                    @Override
-                    public void onFailure(Call<Movie> call, Throwable t) {
-                        Log.e(LOG_TAG, t.toString());
+                        runtimeTextView.setText(String.valueOf(movie.getRuntime()));
                     }
                 });
             }

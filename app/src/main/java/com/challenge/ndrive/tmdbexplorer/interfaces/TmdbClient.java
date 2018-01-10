@@ -8,15 +8,22 @@ import com.challenge.ndrive.tmdbexplorer.model.Movie;
 import com.challenge.ndrive.tmdbexplorer.model.MoviesResponse;
 import com.challenge.ndrive.tmdbexplorer.utils.TmdbImageType;
 
-import retrofit2.Call;
-import retrofit2.http.GET;
-import retrofit2.http.Path;
-import retrofit2.http.Query;
+import java.util.List;
 
 /**
  * Created by marcelo on 1/8/18.
  */
 public interface TmdbClient {
+
+    interface MoviesCallback<T> {
+
+        void onLoaded(T movies);
+    }
+
+    interface MovieCallback<T> {
+
+        void onLoaded(T movie);
+    }
 
     /**
      * Return a TMDb image uri.
@@ -35,17 +42,15 @@ public interface TmdbClient {
      * @return A list of movies match with the query or an empty list.
      */
     @NonNull
-    @GET("search/movie")
-    Call<MoviesResponse> searchMovies(@Query("api_key") String apiKey, @Query("page") int page, @Query("query") String query);
+    void searchMovies(@NonNull String query, int page, MoviesCallback<List<Movie>> callback);
 
     /**
      * Get the details of a Movie on TMDb service.
      *
-     * @param id The id of movie to load.
+     * @param movieId The id of movie to load.
      * @return The {@link Movie} instance filled with detail data.
      */
     @Nullable
-    @GET("movie/{id}")
-    Call<Movie> getMovieDetails(@Path("id") long id, @Query("api_key") String apiKey);
+    void getMovie(long movieId, MovieCallback<Movie> callback);
 
 }
