@@ -2,8 +2,6 @@ package com.challenge.ndrive.tmdbexplorer.activity;
 
 import android.content.Intent;
 import android.support.annotation.StringRes;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -14,28 +12,36 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 import com.challenge.ndrive.tmdbexplorer.R;
+import com.challenge.ndrive.tmdbexplorer.TmdbApplication;
 import com.challenge.ndrive.tmdbexplorer.adapter.MovieAdapter;
-import com.challenge.ndrive.tmdbexplorer.loader.MovieLoader;
+import com.challenge.ndrive.tmdbexplorer.interfaces.TmdbClient;
 import com.challenge.ndrive.tmdbexplorer.model.Movie;
 import com.challenge.ndrive.tmdbexplorer.listener.RecyclerItemClickListener;
+import com.challenge.ndrive.tmdbexplorer.model.MoviesResponse;
 
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Movie>> {
+public class MainActivity extends AppCompatActivity {
 
-    /**
-     * Constant value for the earthquake loader ID.
-     */
-    private static final int MOVIE_LOADER_ID = 1;
+    /** Tag for the log messages */
+    private static final String LOG_TAG = MainActivity.class.getSimpleName();
+
+    private static final String API_KEY = "83d01f18538cb7a275147492f84c3698";
 
     private MovieAdapter mAdapter;
+
+    private TmdbClient mClient;
 
     @BindView(R.id.loading_indicator)
     View mLoadingIndicator;
@@ -55,6 +61,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         setContentView(R.layout.activity_main);
 
         ButterKnife.bind(this);
+
+        mClient = ((TmdbApplication) getApplication()).getClient();
 
         mLoadingIndicator.setVisibility(View.GONE);
 
@@ -112,14 +120,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 })
         );
 
-        if (hasNetworkConnection()) {
-            // Initialize the loader. Pass in the int ID constant defined above and pass in null for
-            // the bundle. Pass in this activity for the LoaderCallbacks parameter (which is valid
-            // because this activity implements the LoaderCallbacks interface).
-            if (getSupportLoaderManager().getLoader(MOVIE_LOADER_ID) != null) {
-                getSupportLoaderManager().initLoader(MOVIE_LOADER_ID, null, this);
-            }
-        } else {
+        if (!hasNetworkConnection()) {
             showNoInternetConnection();
         }
     }
@@ -127,10 +128,34 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private void searchMovies(String query) {
         hideEmptyMessage();
 
-        Bundle queryBundle = new Bundle();
-        queryBundle.putString("queryString", query);
-        queryBundle.putInt("page", 1);
-        getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, queryBundle, this);
+        Call<MoviesResponse> call = mClient.searchMovies(API_KEY, 1, query);
+        call.enqueue(new Callback<MoviesResponse>() {
+            @Override
+            public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
+                List<Movie> movies = response.body().getResults();
+
+                mLoadingIndicator.setVisibility(View.GONE);
+
+                // Clear the adapter of previous movie data
+                mAdapter.clear();
+
+                // If there is a valid list of {@link Movie}s, then add them to the adapter's
+                // data set. This will trigger the ListView to update.
+                if (movies != null && !movies.isEmpty()) {
+                    hideEmptyMessage();
+                    mAdapter.addMovies(movies);
+                } else {
+                    setEmptyMessage(R.string.no_movies);
+                }
+
+                searchView.clearFocus();
+            }
+
+            @Override
+            public void onFailure(Call<MoviesResponse> call, Throwable t) {
+                Log.e(LOG_TAG, t.toString());
+            }
+        });
     }
 
     private boolean hasNetworkConnection() {
@@ -153,50 +178,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         // Update empty state with no connection error message
         setEmptyMessage(R.string.no_internet_connection);
-    }
-
-    @Override
-    public Loader<List<Movie>> onCreateLoader(int i, Bundle bundle) {
-//        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-//        String minMagnitude = sharedPrefs.getString(
-//                getString(R.string.settings_min_magnitude_key),
-//                getString(R.string.settings_min_magnitude_default));
-//
-//        String orderBy = sharedPrefs.getString(
-//                getString(R.string.settings_order_by_key),
-//                getString(R.string.settings_order_by_default)
-//        );
-
-        String query = bundle.getString("queryString");
-        int page = bundle.getInt("page");
-
-        return new MovieLoader(this, query, page);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<List<Movie>> loader, List<Movie> movies) {
-
-        mLoadingIndicator.setVisibility(View.GONE);
-
-        // Clear the adapter of previous movie data
-        mAdapter.clear();
-
-        // If there is a valid list of {@link Movie}s, then add them to the adapter's
-        // data set. This will trigger the ListView to update.
-        if (movies != null && !movies.isEmpty()) {
-            hideEmptyMessage();
-            mAdapter.addMovies(movies);
-        } else {
-            setEmptyMessage(R.string.no_movies);
-        }
-
-        searchView.clearFocus();
-    }
-
-    @Override
-    public void onLoaderReset(Loader<List<Movie>> loader) {
-        // Loader reset
-        mAdapter.clear();
     }
 
     private void setEmptyMessage(@StringRes int message) {

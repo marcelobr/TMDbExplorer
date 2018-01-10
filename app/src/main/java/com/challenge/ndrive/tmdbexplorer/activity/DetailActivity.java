@@ -4,10 +4,9 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -16,20 +15,22 @@ import com.bumptech.glide.Glide;
 import com.challenge.ndrive.tmdbexplorer.R;
 import com.challenge.ndrive.tmdbexplorer.TmdbApplication;
 import com.challenge.ndrive.tmdbexplorer.interfaces.TmdbClient;
-import com.challenge.ndrive.tmdbexplorer.loader.MovieDetailLoader;
 import com.challenge.ndrive.tmdbexplorer.model.Movie;
 import com.challenge.ndrive.tmdbexplorer.utils.TmdbImageType;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
-public class DetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Movie> {
+public class DetailActivity extends AppCompatActivity {
 
-    /**
-     * Constant value for the movie detail loader ID.
-     */
-    private static final int MOVIE_DETAIL_LOADER_ID = 2;
+    /** Tag for the log messages */
+    private static final String LOG_TAG = DetailActivity.class.getSimpleName();
+
+    private static final String API_KEY = "83d01f18538cb7a275147492f84c3698";
 
     private TmdbClient mClient;
 
@@ -89,9 +90,45 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         if (networkInfo != null && networkInfo.isConnected()) {
             if (extras != null) {
                 long movieId = extras.getLong("MovieId");
-                Bundle movieIdBundle = new Bundle();
-                movieIdBundle.putLong("movieId", movieId);
-                getSupportLoaderManager().initLoader(MOVIE_DETAIL_LOADER_ID, movieIdBundle, this);
+                Call<Movie> call = mClient.getMovieDetails(movieId, API_KEY);
+                call.enqueue(new Callback<Movie>() {
+                    @Override
+                    public void onResponse(Call<Movie> call, Response<Movie> response) {
+                        Movie movieDetail = response.body();
+
+                        loadingIndicator.setVisibility(View.GONE);
+
+                        titleTextView.setText(movieDetail.getTitle());
+
+                        boolean isLandscape = getResources().getBoolean(R.bool.is_landscape);
+
+                        String moviePathImage = isLandscape ? movieDetail.getPoster​Image() : movieDetail.getBackdropPath();
+
+                        Uri movieImage = mClient.getImageUri(moviePathImage, TmdbImageType.LARGE);
+
+                        Glide.with(getApplicationContext())
+                                .load(movieImage)
+                                .placeholder(R.drawable.detail_image_placeholder)
+                                .crossFade()
+                                .error(R.drawable.image_error)
+                                .into(backdropImageView);
+
+                        voteAverageTextView.setText(String.valueOf(movieDetail.getVoteAverage()));
+
+                        voteCountTextView.setText(String.valueOf(movieDetail.getVoteCount()));
+
+                        overviewTextView.setText(movieDetail.getOverview());
+
+                        revenueTextView.setText(String.valueOf(movieDetail.getRevenue()));
+
+                        runtimeTextView.setText(String.valueOf(movieDetail.getRuntime()));
+                    }
+
+                    @Override
+                    public void onFailure(Call<Movie> call, Throwable t) {
+                        Log.e(LOG_TAG, t.toString());
+                    }
+                });
             }
         } else {
             // Otherwise, display error
@@ -101,45 +138,5 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             // Update empty state with no connection error message
             mEmptyStateTextView.setText(R.string.no_internet_connection);
         }
-    }
-
-    @Override
-    public Loader<Movie> onCreateLoader(int i, Bundle bundle) {
-        return new MovieDetailLoader(this, bundle.getLong("movieId"));
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Movie> loader, Movie movieDetail) {
-
-        loadingIndicator.setVisibility(View.GONE);
-
-        titleTextView.setText(movieDetail.getTitle());
-
-        boolean isLandscape = getResources().getBoolean(R.bool.is_landscape);
-
-        String moviePathImage = isLandscape ? movieDetail.getPoster​Image() : movieDetail.getBackdropPath();
-
-        Uri movieImage = mClient.getImageUri(moviePathImage, TmdbImageType.LARGE);
-
-        Glide.with(this)
-                .load(movieImage)
-                .placeholder(R.drawable.detail_image_placeholder)
-                .crossFade()
-                .error(R.drawable.image_error)
-                .into(backdropImageView);
-
-        voteAverageTextView.setText(String.valueOf(movieDetail.getVoteAverage()));
-
-        voteCountTextView.setText(String.valueOf(movieDetail.getVoteCount()));
-
-        overviewTextView.setText(movieDetail.getOverview());
-
-        revenueTextView.setText(String.valueOf(movieDetail.getRevenue()));
-
-        runtimeTextView.setText(String.valueOf(movieDetail.getRuntime()));
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Movie> loader) {
     }
 }

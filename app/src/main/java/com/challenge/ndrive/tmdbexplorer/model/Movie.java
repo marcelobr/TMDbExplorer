@@ -3,6 +3,8 @@ package com.challenge.ndrive.tmdbexplorer.model;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -19,15 +21,25 @@ public class Movie {
     /** Tag for the log messages */
     private static final String LOG_TAG = Movie.class.getSimpleName();
 
+    @SerializedName("id")
     private long mId;
+    @SerializedName("title")
     private String mTitle;
+    @SerializedName("release_date")
     private String mReleaseDate;
+    @SerializedName("poster_path")
     private String mPoster​Image;
+    @SerializedName("backdrop_path")
     private String mBackdropPath;
+    @SerializedName("vote_average")
     private double mVoteAverage;
+    @SerializedName("vote_count")
     private double mVoteCount;
+    @SerializedName("overview")
     private String mOverview;
+    @SerializedName("revenue")
     private int mRevenue;
+    @SerializedName("runtime")
     private int mRuntime;
 
     public Movie(long id, String title, String releaseDate, String poster​Image) {
