@@ -2,6 +2,7 @@ package com.challenge.ndrive.tmdbexplorer.adapter;
 
 import android.content.Context;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -17,6 +18,7 @@ import com.challenge.ndrive.tmdbexplorer.interfaces.TmdbClient;
 import com.challenge.ndrive.tmdbexplorer.model.Movie;
 import com.challenge.ndrive.tmdbexplorer.utils.TmdbImageType;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -37,13 +39,13 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    static class ViewHolder extends RecyclerView.ViewHolder {
 
-        public ImageView mPosterImageView;
-        public TextView mTitleTextView;
-        public TextView mYearTextView;
+        ImageView mPosterImageView;
+        TextView mTitleTextView;
+        TextView mYearTextView;
 
-        public ViewHolder(View view) {
+        ViewHolder(View view) {
             super(view);
             mPosterImageView = view.findViewById(R.id.poster_image);
             mTitleTextView = view.findViewById(R.id.movie_title);
@@ -107,6 +109,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     public void addMovies(List<Movie> movies) {
         this.mMoviesList = movies;
         notifyDataSetChanged();
+    }
+
+    @NonNull
+    public List<Movie> getMoviesList() {
+        return this.mMoviesList == null ? new ArrayList<Movie>() : this.mMoviesList;
     }
 
     public void clear() {

@@ -22,6 +22,7 @@ import com.challenge.ndrive.tmdbexplorer.interfaces.TmdbClient;
 import com.challenge.ndrive.tmdbexplorer.model.Movie;
 import com.challenge.ndrive.tmdbexplorer.listener.RecyclerItemClickListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -29,6 +30,8 @@ import butterknife.ButterKnife;
 
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final String MOVIE_LIST_PARAM = "MOVIE_LIST";
 
     private MovieAdapter mAdapter;
 
@@ -85,7 +88,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        List<Movie> savedMovieList = null;
+
+        if (savedInstanceState != null) {
+            savedMovieList = savedInstanceState.getParcelableArrayList(MOVIE_LIST_PARAM);
+        }
+
         mAdapter = new MovieAdapter(this);
+        mAdapter.addMovies(savedMovieList);
+
         mMovieRecyclerView.setHasFixedSize(true);
         mMovieRecyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
         mMovieRecyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -114,6 +125,12 @@ public class MainActivity extends AppCompatActivity {
         if (!hasNetworkConnection()) {
             showNoInternetConnection();
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList(MOVIE_LIST_PARAM, new ArrayList<>(mAdapter.getMoviesList()));
+        super.onSaveInstanceState(outState);
     }
 
     private void searchMovies(String query) {
@@ -147,13 +164,10 @@ public class MainActivity extends AppCompatActivity {
                 getSystemService(Context.CONNECTIVITY_SERVICE);
 
         // Get details on the currently active default data network
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        //NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        NetworkInfo networkInfo = connMgr != null ? connMgr.getActiveNetworkInfo() : null;
 
-        if (networkInfo != null && networkInfo.isConnected()) {
-            return true;
-        } else {
-            return false;
-        }
+        return networkInfo != null && networkInfo.isConnected();
     }
 
     private void showNoInternetConnection() {

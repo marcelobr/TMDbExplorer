@@ -1,5 +1,7 @@
 package com.challenge.ndrive.tmdbexplorer.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -9,14 +11,13 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 
 /**
  * Created by marcelo on 03/01/18.
  */
 
-public class Movie {
+public class Movie implements Parcelable {
 
     /** Tag for the log messages */
     private static final String LOG_TAG = Movie.class.getSimpleName();
@@ -57,6 +58,19 @@ public class Movie {
         this.mOverview = overview;
         this.mRevenue = revenue;
         this.mRuntime = runtime;
+    }
+
+    public Movie(Parcel in) {
+        this.mId = in.readLong();
+        this.mTitle = in.readString();
+        this.mReleaseDate = in.readString();
+        this.mPoster​Image = in.readString();
+        this.mBackdropPath = in.readString();
+        this.mVoteAverage = in.readDouble();
+        this.mVoteCount = in.readDouble();
+        this.mOverview = in.readString();
+        this.mRevenue = in.readInt();
+        this.mRuntime = in.readInt();
     }
 
     public long getId() {
@@ -123,4 +137,34 @@ public class Movie {
 
         return date.get(Calendar.YEAR);
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(this.mId);
+        dest.writeString(this.mTitle);
+        dest.writeString(this.mReleaseDate);
+        dest.writeString(this.mPoster​Image);
+        dest.writeString(this.mBackdropPath);
+        dest.writeDouble(this.mVoteAverage);
+        dest.writeDouble(this.mVoteCount);
+        dest.writeString(this.mOverview);
+        dest.writeInt(this.mRevenue);
+        dest.writeInt(this.mRuntime);
+    }
+
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public Movie createFromParcel(Parcel in) {
+            return new Movie(in);
+        }
+
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
+
 }

@@ -23,7 +23,11 @@ import butterknife.ButterKnife;
 
 public class DetailActivity extends AppCompatActivity {
 
+    private static final String MOVIE_PARAM = "MOVIE";
+
     private TmdbClient mClient;
+
+    private Movie mMovie;
 
     /**
      * TextView that is displayed when the list is empty
@@ -73,44 +77,23 @@ public class DetailActivity extends AppCompatActivity {
                 getSystemService(Context.CONNECTIVITY_SERVICE);
 
         // Get details on the currently active default data network
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        NetworkInfo networkInfo = connMgr != null ? connMgr.getActiveNetworkInfo() : null;
 
         Bundle extras = getIntent().getExtras();
 
-        // If there is a network connection, fetch data
-        if (networkInfo != null && networkInfo.isConnected()) {
+        if (savedInstanceState != null) {
+            mMovie = savedInstanceState.getParcelable(MOVIE_PARAM);
+            loadMovie(mMovie);
+        } else if (networkInfo != null && networkInfo.isConnected()) { // If there is a network connection, fetch data
+
             if (extras != null) {
                 long movieId = extras.getLong("MovieId");
 
                 mClient.getMovie(movieId, new TmdbClient.MovieCallback<Movie>() {
                     @Override
                     public void onLoaded(Movie movie) {
-                        loadingIndicator.setVisibility(View.GONE);
-
-                        titleTextView.setText(movie.getTitle());
-
-                        boolean isLandscape = getResources().getBoolean(R.bool.is_landscape);
-
-                        String moviePathImage = isLandscape ? movie.getPoster​Image() : movie.getBackdropPath();
-
-                        Uri movieImage = mClient.getImageUri(moviePathImage, TmdbImageType.LARGE);
-
-                        Glide.with(getApplicationContext())
-                                .load(movieImage)
-                                .placeholder(R.drawable.detail_image_placeholder)
-                                .crossFade()
-                                .error(R.drawable.image_error)
-                                .into(backdropImageView);
-
-                        voteAverageTextView.setText(String.valueOf(movie.getVoteAverage()));
-
-                        voteCountTextView.setText(String.valueOf(movie.getVoteCount()));
-
-                        overviewTextView.setText(movie.getOverview());
-
-                        revenueTextView.setText(String.valueOf(movie.getRevenue()));
-
-                        runtimeTextView.setText(String.valueOf(movie.getRuntime()));
+                        mMovie = movie;
+                        loadMovie(mMovie);
                     }
                 });
             }
@@ -122,5 +105,40 @@ public class DetailActivity extends AppCompatActivity {
             // Update empty state with no connection error message
             mEmptyStateTextView.setText(R.string.no_internet_connection);
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable(MOVIE_PARAM, mMovie);
+        super.onSaveInstanceState(outState);
+    }
+
+    public void loadMovie(Movie movie) {
+        loadingIndicator.setVisibility(View.GONE);
+
+        titleTextView.setText(movie.getTitle());
+
+        boolean isLandscape = getResources().getBoolean(R.bool.is_landscape);
+
+        String moviePathImage = isLandscape ? movie.getPoster​Image() : movie.getBackdropPath();
+
+        Uri movieImage = mClient.getImageUri(moviePathImage, TmdbImageType.LARGE);
+
+        Glide.with(getApplicationContext())
+                .load(movieImage)
+                .placeholder(R.drawable.detail_image_placeholder)
+                .crossFade()
+                .error(R.drawable.image_error)
+                .into(backdropImageView);
+
+        voteAverageTextView.setText(String.valueOf(movie.getVoteAverage()));
+
+        voteCountTextView.setText(String.valueOf(movie.getVoteCount()));
+
+        overviewTextView.setText(movie.getOverview());
+
+        revenueTextView.setText(String.valueOf(movie.getRevenue()));
+
+        runtimeTextView.setText(String.valueOf(movie.getRuntime()));
     }
 }
