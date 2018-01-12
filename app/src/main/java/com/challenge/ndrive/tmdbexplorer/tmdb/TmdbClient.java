@@ -1,10 +1,9 @@
-package com.challenge.ndrive.tmdbexplorer.interfaces;
+package com.challenge.ndrive.tmdbexplorer.tmdb;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import com.challenge.ndrive.tmdbexplorer.model.Movie;
-import com.challenge.ndrive.tmdbexplorer.utils.TmdbImageType;
 
 import java.util.List;
 

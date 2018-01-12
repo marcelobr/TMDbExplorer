@@ -1,4 +1,4 @@
-package com.challenge.ndrive.tmdbexplorer.activity;
+package com.challenge.ndrive.tmdbexplorer.ui.detail;
 
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +11,8 @@ import com.bumptech.glide.Glide;
 import com.challenge.ndrive.tmdbexplorer.R;
 import com.challenge.ndrive.tmdbexplorer.TmdbApplication;
 import com.challenge.ndrive.tmdbexplorer.model.Movie;
+import com.challenge.ndrive.tmdbexplorer.mvp.detail.DetailPresenter;
+import com.challenge.ndrive.tmdbexplorer.mvp.detail.DetailView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

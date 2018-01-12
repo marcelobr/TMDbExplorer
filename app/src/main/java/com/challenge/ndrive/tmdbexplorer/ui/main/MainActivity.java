@@ -1,4 +1,4 @@
-package com.challenge.ndrive.tmdbexplorer.activity;
+package com.challenge.ndrive.tmdbexplorer.ui.main;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,9 +13,10 @@ import android.widget.TextView;
 
 import com.challenge.ndrive.tmdbexplorer.R;
 import com.challenge.ndrive.tmdbexplorer.TmdbApplication;
-import com.challenge.ndrive.tmdbexplorer.adapter.MovieAdapter;
-import com.challenge.ndrive.tmdbexplorer.listener.RecyclerItemClickListener;
+import com.challenge.ndrive.tmdbexplorer.ui.detail.DetailActivity;
 import com.challenge.ndrive.tmdbexplorer.model.Movie;
+import com.challenge.ndrive.tmdbexplorer.mvp.main.MainPresenter;
+import com.challenge.ndrive.tmdbexplorer.mvp.main.MainView;
 
 import java.util.List;
 

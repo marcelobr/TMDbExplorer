@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
-    tools:context="com.challenge.ndrive.tmdbexplorer.activity.MainActivity"
+    tools:context="com.challenge.ndrive.tmdbexplorer.ui.main.MainActivity"
     android:id="@+id/relativeLayout">
 
     <android.support.v7.widget.SearchView

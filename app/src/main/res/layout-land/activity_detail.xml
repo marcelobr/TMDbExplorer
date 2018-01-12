@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:fillViewport="true"
     android:scrollbars="none"
-    tools:context="com.challenge.ndrive.tmdbexplorer.activity.DetailActivity">
+    tools:context="com.challenge.ndrive.tmdbexplorer.ui.detail.DetailActivity">
 
     <LinearLayout
         android:id="@+id/movie_detail_container"

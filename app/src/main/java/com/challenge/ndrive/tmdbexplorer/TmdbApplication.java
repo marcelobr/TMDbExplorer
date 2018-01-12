@@ -2,8 +2,8 @@ package com.challenge.ndrive.tmdbexplorer;
 
 import android.app.Application;
 
-import com.challenge.ndrive.tmdbexplorer.interfaces.TmdbClient;
-import com.challenge.ndrive.tmdbexplorer.utils.TmdbClientImpl;
+import com.challenge.ndrive.tmdbexplorer.tmdb.TmdbClient;
+import com.challenge.ndrive.tmdbexplorer.tmdb.TmdbClientImpl;
 
 /**
  * Created by marcelo on 1/8/18.

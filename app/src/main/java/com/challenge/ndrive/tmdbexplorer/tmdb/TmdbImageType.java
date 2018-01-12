@@ -1,4 +1,4 @@
-package com.challenge.ndrive.tmdbexplorer.utils;
+package com.challenge.ndrive.tmdbexplorer.tmdb;
 
 /**
  * Created by marcelo on 1/8/18.

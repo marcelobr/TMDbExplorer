@@ -1,4 +1,4 @@
-package com.challenge.ndrive.tmdbexplorer.interfaces;
+package com.challenge.ndrive.tmdbexplorer.tmdb;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;

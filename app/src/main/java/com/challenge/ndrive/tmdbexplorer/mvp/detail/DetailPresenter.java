@@ -1,11 +1,11 @@
-package com.challenge.ndrive.tmdbexplorer.activity;
+package com.challenge.ndrive.tmdbexplorer.mvp.detail;
 
 import android.net.Uri;
 import android.os.Bundle;
 
-import com.challenge.ndrive.tmdbexplorer.interfaces.TmdbClient;
+import com.challenge.ndrive.tmdbexplorer.tmdb.TmdbClient;
 import com.challenge.ndrive.tmdbexplorer.model.Movie;
-import com.challenge.ndrive.tmdbexplorer.utils.TmdbImageType;
+import com.challenge.ndrive.tmdbexplorer.tmdb.TmdbImageType;
 
 /**
  * Created by marcelo on 11/01/18.

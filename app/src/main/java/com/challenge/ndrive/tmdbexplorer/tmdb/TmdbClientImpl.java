@@ -1,4 +1,4 @@
-package com.challenge.ndrive.tmdbexplorer.utils;
+package com.challenge.ndrive.tmdbexplorer.tmdb;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -8,8 +8,6 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.challenge.ndrive.tmdbexplorer.R;
-import com.challenge.ndrive.tmdbexplorer.interfaces.ApiEndpoints;
-import com.challenge.ndrive.tmdbexplorer.interfaces.TmdbClient;
 import com.challenge.ndrive.tmdbexplorer.model.Movie;
 import com.challenge.ndrive.tmdbexplorer.model.MoviesResponse;
 

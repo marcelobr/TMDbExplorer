@@ -1,4 +1,4 @@
-package com.challenge.ndrive.tmdbexplorer.adapter;
+package com.challenge.ndrive.tmdbexplorer.ui.main;
 
 import android.content.Context;
 import android.net.Uri;
@@ -14,9 +14,9 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.challenge.ndrive.tmdbexplorer.R;
 import com.challenge.ndrive.tmdbexplorer.TmdbApplication;
-import com.challenge.ndrive.tmdbexplorer.interfaces.TmdbClient;
+import com.challenge.ndrive.tmdbexplorer.tmdb.TmdbClient;
 import com.challenge.ndrive.tmdbexplorer.model.Movie;
-import com.challenge.ndrive.tmdbexplorer.utils.TmdbImageType;
+import com.challenge.ndrive.tmdbexplorer.tmdb.TmdbImageType;
 
 import java.util.ArrayList;
 import java.util.Calendar;

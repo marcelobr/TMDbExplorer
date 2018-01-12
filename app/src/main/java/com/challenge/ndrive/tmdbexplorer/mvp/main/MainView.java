@@ -1,4 +1,4 @@
-package com.challenge.ndrive.tmdbexplorer.activity;
+package com.challenge.ndrive.tmdbexplorer.mvp.main;
 
 import com.challenge.ndrive.tmdbexplorer.model.Movie;
 
