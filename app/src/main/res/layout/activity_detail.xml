@@ -8,114 +8,122 @@
     android:scrollbars="none"
     tools:context="com.challenge.ndrive.tmdbexplorer.activity.DetailActivity">
 
-    <ScrollView
+    <LinearLayout
+        android:id="@+id/movie_detail_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:orientation="vertical">
 
-        <LinearLayout
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/movie_detail_title"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:textAppearanceLarge"
-                tools:text="Android" />
+                android:orientation="vertical"
+                android:padding="16dp">
 
-            <ImageView
-                android:id="@+id/movie_detail_backdrop"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:scaleType="fitCenter"
-                android:layout_marginTop="16dp"/>
+                <TextView
+                    android:id="@+id/movie_detail_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:textAppearanceLarge"
+                    tools:text="Android" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/overview_label"
-                android:textAppearance="?android:textAppearanceMedium"
-                android:textStyle="bold" />
+                <ImageView
+                    android:id="@+id/movie_detail_backdrop"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="16dp"
+                    android:scaleType="fitCenter" />
 
-            <TextView
-                android:id="@+id/movie_detail_overview"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:textAppearance="?android:textAppearanceMedium" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/overview_label"
+                    android:textAppearance="?android:textAppearanceMedium"
+                    android:textStyle="bold" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/vote_average_label"
-                android:textAppearance="?android:textAppearanceMedium"
-                android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/movie_detail_overview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:textAppearance="?android:textAppearanceMedium" />
 
-            <TextView
-                android:id="@+id/movie_detail_vote_average"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                tools:text="Android" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/vote_average_label"
+                    android:textAppearance="?android:textAppearanceMedium"
+                    android:textStyle="bold" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/vote_count_label"
-                android:textAppearance="?android:textAppearanceMedium"
-                android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/movie_detail_vote_average"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    tools:text="Android" />
 
-            <TextView
-                android:id="@+id/movie_detail_vote_count"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                tools:text="Android" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/vote_count_label"
+                    android:textAppearance="?android:textAppearanceMedium"
+                    android:textStyle="bold" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/revenue_label"
-                android:textAppearance="?android:textAppearanceMedium"
-                android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/movie_detail_vote_count"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    tools:text="Android" />
 
-            <TextView
-                android:id="@+id/movie_detail_revenue"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                tools:text="Android" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/revenue_label"
+                    android:textAppearance="?android:textAppearanceMedium"
+                    android:textStyle="bold" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/runtime_label"
-                android:textAppearance="?android:textAppearanceMedium"
-                android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/movie_detail_revenue"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    tools:text="Android" />
 
-            <TextView
-                android:id="@+id/movie_detail_runtime"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                tools:text="Android" />
-        </LinearLayout>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/runtime_label"
+                    android:textAppearance="?android:textAppearanceMedium"
+                    android:textStyle="bold" />
 
-    </ScrollView>
+                <TextView
+                    android:id="@+id/movie_detail_runtime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    tools:text="Android" />
+            </LinearLayout>
+        </ScrollView>
+
+    </LinearLayout>
 
     <!-- Empty View -->
     <TextView
         android:id="@+id/movie_detail_empty_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:textAppearance="?android:textAppearanceMedium" />
 
@@ -124,6 +132,7 @@
         style="@style/Widget.AppCompat.ProgressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true" />
+        android:layout_centerInParent="true"
+        android:visibility="visible" />
 
 </RelativeLayout>

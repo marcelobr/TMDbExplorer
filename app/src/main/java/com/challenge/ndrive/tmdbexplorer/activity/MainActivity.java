@@ -1,41 +1,31 @@
 package com.challenge.ndrive.tmdbexplorer.activity;
 
 import android.content.Intent;
-import android.support.annotation.StringRes;
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
 import com.challenge.ndrive.tmdbexplorer.R;
 import com.challenge.ndrive.tmdbexplorer.TmdbApplication;
 import com.challenge.ndrive.tmdbexplorer.adapter.MovieAdapter;
-import com.challenge.ndrive.tmdbexplorer.interfaces.TmdbClient;
-import com.challenge.ndrive.tmdbexplorer.model.Movie;
 import com.challenge.ndrive.tmdbexplorer.listener.RecyclerItemClickListener;
+import com.challenge.ndrive.tmdbexplorer.model.Movie;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-
-public class MainActivity extends AppCompatActivity {
-
-    private static final String MOVIE_LIST_PARAM = "MOVIE_LIST";
+public class MainActivity extends AppCompatActivity implements MainView {
 
     private MovieAdapter mAdapter;
-
-    private TmdbClient mClient;
+    private MainPresenter mPresenter;
 
     @BindView(R.id.loading_indicator)
     View mLoadingIndicator;
@@ -53,49 +43,31 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         ButterKnife.bind(this);
 
-        mClient = ((TmdbApplication) getApplication()).getClient();
+        TmdbApplication mApplication = ((TmdbApplication) getApplication());
+        mPresenter = new MainPresenter(mApplication.getClient());
+        mPresenter.setView(this);
 
-        mLoadingIndicator.setVisibility(View.GONE);
+        //mLoadingIndicator.setVisibility(View.GONE);
 
         searchView.setIconifiedByDefault(false);
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                mEmptyStateTextView.setText("");
-                mLoadingIndicator.setVisibility(View.VISIBLE);
-
-                if (hasNetworkConnection()) {
-                    searchMovies(query);
-                } else {
-                    showNoInternetConnection();
-                }
-
+                mPresenter.searchMovies(query);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                mEmptyStateTextView.setText("");
-
-                if (newText.isEmpty()) {
-                    mAdapter.clear();
-                }
+                mPresenter.onQueryChange(newText);
                 return false;
             }
         });
 
-        List<Movie> savedMovieList = null;
-
-        if (savedInstanceState != null) {
-            savedMovieList = savedInstanceState.getParcelableArrayList(MOVIE_LIST_PARAM);
-        }
-
         mAdapter = new MovieAdapter(this);
-        mAdapter.addMovies(savedMovieList);
 
         mMovieRecyclerView.setHasFixedSize(true);
         mMovieRecyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
@@ -108,81 +80,78 @@ public class MainActivity extends AppCompatActivity {
                 new RecyclerItemClickListener(this, new RecyclerItemClickListener.OnItemClickListener() {
                     @Override
                     public void onItemClick(View view, int position) {
-                        // Find the current movie that was clicked on
-                        Movie currentMovie = mAdapter.getItem(position);
-
-                        // Create a new intent to view the movie detail
-                        Intent intent = new Intent(MainActivity.this, DetailActivity.class);
-
-                        intent.putExtra("MovieId", currentMovie.getId());
-
-                        // Send the intent to launch a new activity
-                        startActivity(intent);
+                        mPresenter.showMovieDetail(position);
                     }
                 })
         );
 
-        if (!hasNetworkConnection()) {
-            showNoInternetConnection();
-        }
+        // Last step restore the State
+        mPresenter.onViewRestoreState(savedInstanceState);
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList(MOVIE_LIST_PARAM, new ArrayList<>(mAdapter.getMoviesList()));
+        mPresenter.onViewSaveState(outState);
         super.onSaveInstanceState(outState);
     }
 
-    private void searchMovies(String query) {
-        hideEmptyMessage();
+    @Override
+    public void showList(List<Movie> moviesList) {
+        // Clear the adapter of previous movie data
+        mAdapter.clear();
 
-        mClient.searchMovies(query, 1, new TmdbClient.MoviesCallback<List<Movie>>() {
-            @Override
-            public void onLoaded(List<Movie> movies) {
-                mLoadingIndicator.setVisibility(View.GONE);
+        // If there is a valid list of {@link Movie}s, then add them to the adapter's
+        // data set. This will trigger the ListView to update.
+        if (moviesList != null && !moviesList.isEmpty()) {
+            mAdapter.addMovies(moviesList);
+        } else {
+            showErrorMessage(getString(R.string.no_movies));
+        }
 
-                // Clear the adapter of previous movie data
-                mAdapter.clear();
-
-                // If there is a valid list of {@link Movie}s, then add them to the adapter's
-                // data set. This will trigger the ListView to update.
-                if (movies != null && !movies.isEmpty()) {
-                    hideEmptyMessage();
-                    mAdapter.addMovies(movies);
-                } else {
-                    setEmptyMessage(R.string.no_movies);
-                }
-
-                searchView.clearFocus();
-            }
-        });
+        mMovieRecyclerView.setVisibility(View.VISIBLE);
     }
 
-    private boolean hasNetworkConnection() {
-        // Get a reference to the ConnectivityManager to check state of network connectivity
-        ConnectivityManager connMgr = (ConnectivityManager)
-                getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        // Get details on the currently active default data network
-        //NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        NetworkInfo networkInfo = connMgr != null ? connMgr.getActiveNetworkInfo() : null;
-
-        return networkInfo != null && networkInfo.isConnected();
+    @Override
+    public void clearList() {
+        mAdapter.clear();
     }
 
-    private void showNoInternetConnection() {
+    @Override
+    public void clearSearchFocus() {
+        searchView.clearFocus();
+    }
+
+    @Override
+    public void showLoading() {
+        mLoadingIndicator.setVisibility(View.VISIBLE);
+        mMovieRecyclerView.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void hideLoading() {
         mLoadingIndicator.setVisibility(View.GONE);
-
-        // Update empty state with no connection error message
-        setEmptyMessage(R.string.no_internet_connection);
     }
 
-    private void setEmptyMessage(@StringRes int message) {
+    @Override
+    public void showErrorMessage(String message) {
+        mLoadingIndicator.setVisibility(View.GONE);
+        mMovieRecyclerView.setVisibility(View.GONE);
         mEmptyStateTextView.setText(message);
         mEmptyStateTextView.setVisibility(View.VISIBLE);
     }
 
-    private void hideEmptyMessage() {
+    @Override
+    public void hideErrorMessage() {
         mEmptyStateTextView.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showMovieDetails(long movieId) {
+        // Create a new intent to view the movie detail
+        Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+        intent.putExtra("MovieId", movieId);
+
+        // Send the intent to launch a new activity
+        startActivity(intent);
     }
 }

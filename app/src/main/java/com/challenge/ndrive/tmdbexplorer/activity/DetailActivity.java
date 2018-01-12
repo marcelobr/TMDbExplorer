@@ -1,8 +1,5 @@
 package com.challenge.ndrive.tmdbexplorer.activity;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,21 +10,18 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.challenge.ndrive.tmdbexplorer.R;
 import com.challenge.ndrive.tmdbexplorer.TmdbApplication;
-import com.challenge.ndrive.tmdbexplorer.interfaces.TmdbClient;
 import com.challenge.ndrive.tmdbexplorer.model.Movie;
-import com.challenge.ndrive.tmdbexplorer.utils.TmdbImageType;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends AppCompatActivity implements DetailView {
 
-    private static final String MOVIE_PARAM = "MOVIE";
+    private DetailPresenter mPresenter;
 
-    private TmdbClient mClient;
-
-    private Movie mMovie;
+    @BindView(R.id.movie_detail_container)
+    View mContainer;
 
     /**
      * TextView that is displayed when the list is empty
@@ -36,7 +30,7 @@ public class DetailActivity extends AppCompatActivity {
     TextView mEmptyStateTextView;
 
     @BindView(R.id.movie_detail_loading_indicator)
-    View loadingIndicator;
+    View mLoadingIndicator;
 
     @BindView(R.id.movie_detail_title)
     TextView titleTextView;
@@ -66,63 +60,51 @@ public class DetailActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        mClient = ((TmdbApplication) getApplication()).getClient();
-
-        loadingIndicator.setVisibility(View.VISIBLE);
-
-        mEmptyStateTextView.setText("");
-
-        // Get a reference to the ConnectivityManager to check state of network connectivity
-        ConnectivityManager connMgr = (ConnectivityManager)
-                getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        // Get details on the currently active default data network
-        NetworkInfo networkInfo = connMgr != null ? connMgr.getActiveNetworkInfo() : null;
+        TmdbApplication mApplication = ((TmdbApplication) getApplication());
+        mPresenter = new DetailPresenter(mApplication.getClient());
+        mPresenter.setView(this);
 
         Bundle extras = getIntent().getExtras();
+        mPresenter.getMovieDetail(extras, savedInstanceState);
 
-        if (savedInstanceState != null) {
-            mMovie = savedInstanceState.getParcelable(MOVIE_PARAM);
-            loadMovie(mMovie);
-        } else if (networkInfo != null && networkInfo.isConnected()) { // If there is a network connection, fetch data
-
-            if (extras != null) {
-                long movieId = extras.getLong("MovieId");
-
-                mClient.getMovie(movieId, new TmdbClient.MovieCallback<Movie>() {
-                    @Override
-                    public void onLoaded(Movie movie) {
-                        mMovie = movie;
-                        loadMovie(mMovie);
-                    }
-                });
-            }
-        } else {
-            // Otherwise, display error
-            // First, hide loading indicator so error message will be visible
-            loadingIndicator.setVisibility(View.GONE);
-
-            // Update empty state with no connection error message
-            mEmptyStateTextView.setText(R.string.no_internet_connection);
-        }
+        //mPresenter.onViewRestoreState(savedInstanceState);
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putParcelable(MOVIE_PARAM, mMovie);
+        mPresenter.onViewSaveState(outState);
         super.onSaveInstanceState(outState);
     }
 
-    public void loadMovie(Movie movie) {
-        loadingIndicator.setVisibility(View.GONE);
 
+    @Override
+    public void showLoading() {
+        mLoadingIndicator.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideLoading() {
+        mLoadingIndicator.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showErrorMessage(String message) {
+        mLoadingIndicator.setVisibility(View.GONE);
+        mEmptyStateTextView.setText(R.string.no_internet_connection);
+    }
+
+    @Override
+    public void showDetailContainer() {
+        mContainer.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void showMovie(Movie movie) {
         titleTextView.setText(movie.getTitle());
 
         boolean isLandscape = getResources().getBoolean(R.bool.is_landscape);
 
-        String moviePathImage = isLandscape ? movie.getPoster​Image() : movie.getBackdropPath();
-
-        Uri movieImage = mClient.getImageUri(moviePathImage, TmdbImageType.LARGE);
+        Uri movieImage = mPresenter.getImageUri(isLandscape);
 
         Glide.with(getApplicationContext())
                 .load(movieImage)

@@ -19,6 +19,7 @@ public interface TmdbClient {
      */
     interface MoviesCallback<T> {
         void onLoaded(T movies);
+        void onError(String message);
     }
 
     /**
@@ -27,6 +28,7 @@ public interface TmdbClient {
      */
     interface MovieCallback<T> {
         void onLoaded(T movie);
+        void onError(String message);
     }
 
     /**

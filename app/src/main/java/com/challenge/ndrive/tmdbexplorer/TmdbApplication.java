@@ -17,7 +17,7 @@ public class TmdbApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        client = new TmdbClientImpl();
+        client = new TmdbClientImpl(this);
     }
 
     public TmdbClient getClient() {
