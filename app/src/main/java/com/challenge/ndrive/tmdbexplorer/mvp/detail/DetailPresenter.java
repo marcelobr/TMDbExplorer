@@ -55,7 +55,7 @@ public class DetailPresenter {
             currentErrorMessage = savedInstanceState.getString(ERROR_MESSAGE_PARAM);
 
             if (currentMovie != null) {
-                loadMovie(savedInstanceState.<Movie>getParcelable(MOVIE_PARAM));
+                loadMovie(currentMovie);
             } else if (currentErrorMessage != null) {
                 loadError(currentErrorMessage);
             }

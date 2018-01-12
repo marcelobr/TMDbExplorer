@@ -61,6 +61,7 @@ public class MainPresenterTest {
 
         // Assert
         verify(mView).hideErrorMessage();
+        verify(mView).clearSearchFocus();
         verify(mView).showLoading();
         verify(mView).showList(resultList);
     }
