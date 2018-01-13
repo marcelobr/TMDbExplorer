@@ -100,19 +100,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         return this.mMoviesList == null ? 0 : this.mMoviesList.size();
     }
 
-//    public Movie getItem(int position) {
-//        return this.mMoviesList == null ? null : this.mMoviesList.get(position);
-//    }
-
     public void addMovies(List<Movie> movies) {
         this.mMoviesList = movies;
         notifyDataSetChanged();
     }
-
-//    @NonNull
-//    public List<Movie> getMoviesList() {
-//        return this.mMoviesList == null ? new ArrayList<Movie>() : this.mMoviesList;
-//    }
 
     public void clear() {
         if (getItemCount() > 0) {
