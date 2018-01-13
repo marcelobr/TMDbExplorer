@@ -94,22 +94,6 @@ public class DetailPresenterTest {
         verify(mView).showMovie(movie);
     }
 
-//    @Test
-//    public void testRestoreMovieDetailSuccess() {
-//        // Arrange
-//        final Movie movie = new Movie(315635, "Spider-Man: Homecoming", "2017-07-05", "/ApYhuwBWzl29Oxe9JJsgL7qILbD.jpg", "/vc8bCGjdVp0UbMNLzHnHSLRbBWQ.jpg", 7.3, 5681, "Following the events of Captain America: Civil War, Peter Parker, with the help of his mentor Tony Stark, tries to balance his life as an ordinary high school student in Queens, New York City, with fighting crime as his superhero alter ego Spider-Man as a new threat, the Vulture, emerges.", 880024498, 133);
-//
-//        // Act
-//        Bundle extras = new Bundle();
-//        extras.putLong(MOVIE_ID_PARAM, movie.getId());
-//        mPresenter.getMovieDetail(extras);
-//
-//        // Assert
-//        verify(mView).hideLoading();
-//        verify(mView).showDetailContainer();
-//        verify(mView).showMovie(movie);
-//    }
-
     @Test
     public void testGetMovieDetailError() {
         // Arrange

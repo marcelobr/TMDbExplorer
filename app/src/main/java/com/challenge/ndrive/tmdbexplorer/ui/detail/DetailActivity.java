@@ -96,6 +96,7 @@ public class DetailActivity extends AppCompatActivity implements DetailView {
         mContainer.setVisibility(View.GONE);
         mLoadingIndicator.setVisibility(View.GONE);
         mEmptyStateTextView.setText(message);
+        mEmptyStateTextView.setVisibility(View.VISIBLE);
     }
 
     @Override

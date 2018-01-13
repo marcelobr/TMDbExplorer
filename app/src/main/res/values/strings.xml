@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">TMDbExplorer</string>
 
-    <string name="search_message">Digite o título de um filme</string>
+    <string name="search_message">Search Movies...</string>
 
     <string name="date_error_message">[No Date]</string>
 
