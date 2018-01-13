@@ -1,7 +1,7 @@
 # TMDbExplorer
 Application developed for the challenge proposed by NDrive
 
-### Features:
+### Main Features:
 * MVP Pattern;
 * Glide;
 * RecyclerView;
