@@ -8,25 +8,25 @@ import com.challenge.ndrive.tmdbexplorer.model.Movie;
 import java.util.List;
 
 /**
- * Created by marcelo on 1/8/18.
+ * Client interface for TMDb API
  */
 public interface TmdbClient {
 
     /**
-     *
-     * @param <T>
+     * Callback interface for movie search feedback
      */
     interface MoviesCallback<T> {
         void onLoaded(T movies);
+
         void onError(String message);
     }
 
     /**
-     *
-     * @param <T>
+     * Callback interface for movie feedback
      */
     interface MovieCallback<T> {
         void onLoaded(T movie);
+
         void onError(String message);
     }
 
@@ -43,7 +43,7 @@ public interface TmdbClient {
      * Search on TMDb service.
      *
      * @param query The query to search for on TMDb service.
-     * @param page The page to load.
+     * @param page  The page to load.
      */
     void searchMovies(@NonNull String query, int page, MoviesCallback<List<Movie>> callback);
 

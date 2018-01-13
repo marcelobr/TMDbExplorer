@@ -50,8 +50,6 @@ public class MainActivity extends AppCompatActivity implements MainView {
         mPresenter = new MainPresenter(mApplication.getClient());
         mPresenter.setView(this);
 
-        //mLoadingIndicator.setVisibility(View.GONE);
-
         searchView.setIconifiedByDefault(false);
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -101,8 +99,6 @@ public class MainActivity extends AppCompatActivity implements MainView {
         // Clear the adapter of previous movie data
         mAdapter.clear();
 
-        // If there is a valid list of {@link Movie}s, then add them to the adapter's
-        // data set. This will trigger the ListView to update.
         if (moviesList != null && !moviesList.isEmpty()) {
             mAdapter.addMovies(moviesList);
         } else {

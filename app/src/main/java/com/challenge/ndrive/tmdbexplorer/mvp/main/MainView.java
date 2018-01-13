@@ -5,7 +5,7 @@ import com.challenge.ndrive.tmdbexplorer.model.Movie;
 import java.util.List;
 
 /**
- * Created by marcelo on 1/11/18.
+ * The View interface of the movie search screen
  */
 
 public interface MainView {

@@ -9,7 +9,7 @@ import com.challenge.ndrive.tmdbexplorer.tmdb.TmdbClient;
 import com.challenge.ndrive.tmdbexplorer.tmdb.TmdbImageType;
 
 /**
- * Created by marcelo on 11/01/18.
+ * Represents the presenter class of the movie details screen
  */
 
 public class DetailPresenter {

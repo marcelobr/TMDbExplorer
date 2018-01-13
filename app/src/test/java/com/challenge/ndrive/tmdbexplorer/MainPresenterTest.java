@@ -7,10 +7,12 @@ import com.challenge.ndrive.tmdbexplorer.tmdb.TmdbClient;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.robolectric.RobolectricTestRunner;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +27,7 @@ import static org.mockito.Mockito.verify;
  * Created by marcelo on 1/11/18.
  */
 
+//@RunWith(RobolectricTestRunner.class)
 public class MainPresenterTest {
 
     @Mock

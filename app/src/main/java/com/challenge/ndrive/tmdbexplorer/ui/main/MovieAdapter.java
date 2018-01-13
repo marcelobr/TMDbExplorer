@@ -23,7 +23,7 @@ import java.util.Calendar;
 import java.util.List;
 
 /**
- * RecyclerView Adapter for Movies
+ * RecyclerView Adapter for Movies list
  */
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> {
@@ -85,7 +85,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
         holder.mTitleTextView.setText(currentMovie.getTitle());
 
-        // Create a new Date object from the time of the web publication date
         int movieYear = currentMovie.getYear();
         if (movieYear != 0) {
             holder.mYearTextView.setText(String.valueOf(movieYear));

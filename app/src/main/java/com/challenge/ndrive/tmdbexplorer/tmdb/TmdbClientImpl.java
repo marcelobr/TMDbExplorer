@@ -20,12 +20,13 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
- * Created by marcelo on 1/7/18.
+ * Represents a client for TMDb API
  */
-
 public class TmdbClientImpl implements TmdbClient {
 
-    /** Tag for the log messages */
+    /**
+     * Tag for the log messages
+     */
     private static final String LOG_TAG = TmdbClientImpl.class.getSimpleName();
     private static final String API_BASE_URL = "https://api.themoviedb.org/3/";
     private static final String IMAGE_BASE_URL = "https://image.tmdb.org/t/p/";
@@ -97,7 +98,6 @@ public class TmdbClientImpl implements TmdbClient {
                 mApplicationContext.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         // Get details on the currently active default data network
-        //NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         NetworkInfo networkInfo = connMgr != null ? connMgr.getActiveNetworkInfo() : null;
 
         return networkInfo != null && networkInfo.isConnected();

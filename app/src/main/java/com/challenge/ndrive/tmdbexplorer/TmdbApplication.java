@@ -22,7 +22,7 @@ public class TmdbApplication extends Application {
 
 
     public TmdbClient getClient() {
-        return  client;
+        return client;
     }
 
 }

@@ -19,7 +19,9 @@ import java.util.Locale;
 
 public class Movie implements Parcelable {
 
-    /** Tag for the log messages */
+    /**
+     * Tag for the log messages
+     */
     private static final String LOG_TAG = Movie.class.getSimpleName();
 
     @SerializedName("id")

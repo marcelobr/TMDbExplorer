@@ -12,9 +12,8 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 /**
- * Created by marcelo on 10/01/18.
+ * TMDb mapping API interface.
  */
-
 public interface ApiEndpoints {
 
     @NonNull

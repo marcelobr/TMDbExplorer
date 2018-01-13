@@ -3,7 +3,7 @@ package com.challenge.ndrive.tmdbexplorer.mvp.detail;
 import com.challenge.ndrive.tmdbexplorer.model.Movie;
 
 /**
- * Created by marcelo on 11/01/18.
+ * The View interface of the movie details screen
  */
 
 public interface DetailView {

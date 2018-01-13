@@ -1,7 +1,7 @@
 package com.challenge.ndrive.tmdbexplorer.tmdb;
 
 /**
- * Created by marcelo on 1/8/18.
+ * Represents the size of the images used in the application
  */
 
 public enum TmdbImageType {

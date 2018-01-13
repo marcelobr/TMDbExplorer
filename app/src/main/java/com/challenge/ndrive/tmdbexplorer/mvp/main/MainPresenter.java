@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by marcelo on 1/11/18.
+ * Represents the presenter class of the movie search screen
  */
 
 public class MainPresenter {
