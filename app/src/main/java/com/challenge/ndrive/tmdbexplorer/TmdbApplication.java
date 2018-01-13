@@ -6,7 +6,7 @@ import com.challenge.ndrive.tmdbexplorer.tmdb.TmdbClient;
 import com.challenge.ndrive.tmdbexplorer.tmdb.TmdbClientImpl;
 
 /**
- * Created by marcelo on 1/8/18.
+ * TMDb Explorer Application class
  */
 
 public class TmdbApplication extends Application {
@@ -19,6 +19,7 @@ public class TmdbApplication extends Application {
 
         client = new TmdbClientImpl(this);
     }
+
 
     public TmdbClient getClient() {
         return  client;

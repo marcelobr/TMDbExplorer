@@ -85,6 +85,7 @@ public class MainPresenter {
     }
 
     private void loadError(String message) {
+        mView.hideLoading();
         currentErrorMessage = message;
         mView.showErrorMessage(message);
     }

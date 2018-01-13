@@ -14,7 +14,7 @@ public interface DetailView {
 
     void showErrorMessage(String message);
 
-    void showDetailContainer();
+    void hideErrorMessage();
 
     void showMovie(Movie movie);
 

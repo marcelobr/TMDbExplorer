@@ -23,7 +23,7 @@ import java.util.Calendar;
 import java.util.List;
 
 /**
- * Created by marcelo on 04/01/18.
+ * RecyclerView Adapter for Movies
  */
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> {
@@ -37,8 +37,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     private TmdbClient mClient;
 
     // Provide a reference to the views for each data item
-    // Complex data items may need more than one view per item, and
-    // you provide access to all the views for a data item in a view holder
     static class ViewHolder extends RecyclerView.ViewHolder {
 
         ImageView mPosterImageView;
@@ -53,6 +51,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         }
     }
 
+    // Class constructor
     public MovieAdapter(Context context) {
         this.mContext = context;
         this.mClient = ((TmdbApplication) context.getApplicationContext()).getClient();
@@ -60,7 +59,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         this.colorRed = ContextCompat.getColor(context, R.color.red);
     }
 
-    // Create new views (invoked by the layout manager)
+    // Create new views
     @Override
     public MovieAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // create a new view
@@ -70,7 +69,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         return new ViewHolder(listItem);
     }
 
-    // Replace the contents of a view (invoked by the layout manager)
+    // Replace the contents of a view
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Movie currentMovie = this.mMoviesList.get(position);
@@ -96,25 +95,25 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         }
     }
 
-    // Return the size of your dataset (invoked by the layout manager)
+    // Return the size of dataset
     @Override
     public int getItemCount() {
         return this.mMoviesList == null ? 0 : this.mMoviesList.size();
     }
 
-    public Movie getItem(int position) {
-        return this.mMoviesList == null ? null : this.mMoviesList.get(position);
-    }
+//    public Movie getItem(int position) {
+//        return this.mMoviesList == null ? null : this.mMoviesList.get(position);
+//    }
 
     public void addMovies(List<Movie> movies) {
         this.mMoviesList = movies;
         notifyDataSetChanged();
     }
 
-    @NonNull
-    public List<Movie> getMoviesList() {
-        return this.mMoviesList == null ? new ArrayList<Movie>() : this.mMoviesList;
-    }
+//    @NonNull
+//    public List<Movie> getMoviesList() {
+//        return this.mMoviesList == null ? new ArrayList<Movie>() : this.mMoviesList;
+//    }
 
     public void clear() {
         if (getItemCount() > 0) {

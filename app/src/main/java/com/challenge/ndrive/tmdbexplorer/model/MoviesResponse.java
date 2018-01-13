@@ -4,7 +4,9 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-
+/**
+ * Represents the object containing the movie search response data
+ */
 public class MoviesResponse {
 
     @SerializedName("page")

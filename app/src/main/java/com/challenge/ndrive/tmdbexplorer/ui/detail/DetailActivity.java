@@ -1,8 +1,8 @@
 package com.challenge.ndrive.tmdbexplorer.ui.detail;
 
 import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -66,10 +66,12 @@ public class DetailActivity extends AppCompatActivity implements DetailView {
         mPresenter = new DetailPresenter(mApplication.getClient());
         mPresenter.setView(this);
 
-        Bundle extras = getIntent().getExtras();
-        mPresenter.getMovieDetail(extras, savedInstanceState);
-
-        //mPresenter.onViewRestoreState(savedInstanceState);
+        if (savedInstanceState == null) {
+            mPresenter.getMovieDetail(getIntent().getExtras());
+        } else {
+            // Last step restore the State
+            mPresenter.onViewRestoreState(savedInstanceState);
+        }
     }
 
     @Override
@@ -78,10 +80,10 @@ public class DetailActivity extends AppCompatActivity implements DetailView {
         super.onSaveInstanceState(outState);
     }
 
-
     @Override
     public void showLoading() {
         mLoadingIndicator.setVisibility(View.VISIBLE);
+        mContainer.setVisibility(View.GONE);
     }
 
     @Override
@@ -91,17 +93,19 @@ public class DetailActivity extends AppCompatActivity implements DetailView {
 
     @Override
     public void showErrorMessage(String message) {
+        mContainer.setVisibility(View.GONE);
         mLoadingIndicator.setVisibility(View.GONE);
-        mEmptyStateTextView.setText(R.string.no_internet_connection);
+        mEmptyStateTextView.setText(message);
     }
 
     @Override
-    public void showDetailContainer() {
-        mContainer.setVisibility(View.VISIBLE);
+    public void hideErrorMessage() {
+        mEmptyStateTextView.setVisibility(View.GONE);
     }
 
     @Override
     public void showMovie(Movie movie) {
+        mContainer.setVisibility(View.VISIBLE);
         titleTextView.setText(movie.getTitle());
 
         boolean isLandscape = getResources().getBoolean(R.bool.is_landscape);

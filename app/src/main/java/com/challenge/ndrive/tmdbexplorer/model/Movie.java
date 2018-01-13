@@ -14,7 +14,7 @@ import java.util.Calendar;
 import java.util.Locale;
 
 /**
- * Created by marcelo on 03/01/18.
+ * Represents the movie object
  */
 
 public class Movie implements Parcelable {
@@ -109,8 +109,11 @@ public class Movie implements Parcelable {
         return mRuntime;
     }
 
+    /**
+     * @return The release date of the movie
+     */
     @Nullable
-    public Calendar getReleaseDate() {
+    private Calendar getReleaseDate() {
         Calendar calendar = Calendar.getInstance();
 
         if (this.mReleaseDate != null) {

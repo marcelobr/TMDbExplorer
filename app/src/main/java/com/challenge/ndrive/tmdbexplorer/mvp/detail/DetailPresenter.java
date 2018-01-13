@@ -2,9 +2,10 @@ package com.challenge.ndrive.tmdbexplorer.mvp.detail;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 
-import com.challenge.ndrive.tmdbexplorer.tmdb.TmdbClient;
 import com.challenge.ndrive.tmdbexplorer.model.Movie;
+import com.challenge.ndrive.tmdbexplorer.tmdb.TmdbClient;
 import com.challenge.ndrive.tmdbexplorer.tmdb.TmdbImageType;
 
 /**
@@ -13,6 +14,7 @@ import com.challenge.ndrive.tmdbexplorer.tmdb.TmdbImageType;
 
 public class DetailPresenter {
 
+    private static final String MOVIE_ID_PARAM = "MovieId";
     private static final String MOVIE_PARAM = "MOVIE";
     private static final String ERROR_MESSAGE_PARAM = "ERROR_MESSAGE";
 
@@ -31,37 +33,33 @@ public class DetailPresenter {
     }
 
     public void onViewSaveState(Bundle outState) {
-        //outState.putParcelable(MOVIE_PARAM, currentMovie != null ? currentMovie : null);
         outState.putParcelable(MOVIE_PARAM, currentMovie);
         outState.putString(ERROR_MESSAGE_PARAM, currentErrorMessage);
     }
 
-//    public void onViewRestoreState(Bundle savedInstanceState) {
-//        if (savedInstanceState != null) {
-//            currentMovie = savedInstanceState.getParcelable(MOVIE_PARAM);
-//            currentErrorMessage = savedInstanceState.getString(ERROR_MESSAGE_PARAM);
-//
-//            if (currentMovie != null) {
-//                loadMovie(savedInstanceState.<Movie>getParcelable(MOVIE_PARAM));
-//            } else if (currentErrorMessage != null) {
-//                loadError(currentErrorMessage);
-//            }
-//        }
-//    }
-
-    public void getMovieDetail(Bundle extras, Bundle savedInstanceState) {
+    public void onViewRestoreState(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             currentMovie = savedInstanceState.getParcelable(MOVIE_PARAM);
             currentErrorMessage = savedInstanceState.getString(ERROR_MESSAGE_PARAM);
 
             if (currentMovie != null) {
-                loadMovie(currentMovie);
+                loadMovie(savedInstanceState.<Movie>getParcelable(MOVIE_PARAM));
             } else if (currentErrorMessage != null) {
                 loadError(currentErrorMessage);
             }
-        } else if (extras != null) {
-            long movieId = extras.getLong("MovieId");
+        }
+    }
 
+    public void getMovieDetail(@Nullable Bundle extras) {
+        long movieId = 0;
+
+        if (extras != null) {
+            movieId = extras.getLong(MOVIE_ID_PARAM, 0);
+        }
+
+        if (movieId != 0) {
+            mView.hideErrorMessage();
+            mView.showLoading();
             mClient.getMovie(movieId, new TmdbClient.MovieCallback<Movie>() {
                 @Override
                 public void onLoaded(Movie movie) {
@@ -73,6 +71,8 @@ public class DetailPresenter {
                     loadError(message);
                 }
             });
+        } else {
+            loadError("No Movie id !!!");
         }
     }
 
@@ -84,12 +84,12 @@ public class DetailPresenter {
 
     private void loadMovie(Movie movie) {
         mView.hideLoading();
-        mView.showDetailContainer();
         currentMovie = movie;
         mView.showMovie(movie);
     }
 
     private void loadError(String message) {
+        mView.hideLoading();
         currentErrorMessage = message;
         mView.showErrorMessage(message);
     }
